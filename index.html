@@ -22,7 +22,8 @@
     .original { font-size: 11px; color: #6B7280; text-decoration: line-through; margin-left: 5px; }
     
     .loading { text-align: center; padding: 40px; color: #6B7280; grid-column: 1 / -1; }
-    .error { color: red; text-align: center; padding: 20px; grid-column: 1 / -1; background: #fff; border-radius: 10px; }
+    .error { color: red; text-align: center; padding: 20px; grid-column: 1 / -1; background: #fff; border-radius: 10px; margin: 20px; }
+    .debug { background: #fff3cd; padding: 15px; margin: 10px; border-radius: 8px; text-align: left; font-size: 12px; }
     
     .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; }
     .nav-item { font-size: 12px; font-weight: 700; color: #6B7280; text-decoration: none; }
@@ -37,7 +38,8 @@
   </header>
 
   <div class="container" id="grid">
-    <div class="loading">Cargando productos...</div>
+    <div class="loading">🔄 Conectando a Supabase...</div>
+    <div class="debug" id="debug"></div>
   </div>
 
   <nav class="nav">
@@ -45,41 +47,68 @@
     <a class="nav-item">🧭 Categorías</a>
     <a class="nav-item">🛒 Carrito</a>
   </nav>
-
   <script>
-    // 🔑 CLAVES DE SUPABASE CONFIGURADAS
+    // 🔑 CONFIGURACIÓN - REEMPLAZA CON TUS DATOS REALES
     const SUPABASE_URL = 'https://clqapqrqhiykejufrlml.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNscWFwcXJxaGl5a2VqdWZybG1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTUzMDEsImV4cCI6MjA5Mzc5MTMwMX0.L0UB2QWT3Jgouducr2An842QouLrPQ6yIpHOX5Oq2eQ-';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNscWFwcXJxaGl5a2VqdWZybG1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTUzMDEsImV4cCI6MjA5Mzc5MTMwMX0.L0UB2QWT3Jgouducr2An842QouLrPQ6yIpHOX5Oq2eQ';
     
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // Mostrar info de debug
+    document.getElementById('debug').innerHTML = `
+      <strong>🔍 Debug:</strong><br>
+      URL: ${SUPABASE_URL}<br>
+      Key: ${SUPABASE_KEY.substring(0, 20)}...${SUPABASE_KEY.substring(SUPABASE_KEY.length - 10)}<br>
+      Conectando...
+    `;
+
+    // Crear cliente
+    let supabase;
+    try {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      document.getElementById('debug').innerHTML += '<br>✅ Cliente Supabase creado';
+    } catch (e) {
+      document.getElementById('debug').innerHTML += '<br>❌ Error creando cliente: ' + e.message;
+    }
 
     async function loadProducts() {
       const grid = document.getElementById('grid');
+      
       try {
+        document.getElementById('debug').innerHTML += '<br>🔄 Intentando cargar productos...';
+        
         const { data, error } = await supabase.from('products').select('*');
         
         if (error) {
-          console.error("Error:", error);
-          grid.innerHTML = `<div class="error">Error: ${error.message}. Verifica las políticas RLS en Supabase.</div>`;
+          console.error("Error de Supabase:", error);
+          document.getElementById('debug').innerHTML += '<br>❌ Error: ' + error.message;
+          grid.innerHTML = `<div class="error">
+            <h3>⛔ Error de Base de Datos</h3>
+            <p><strong>Mensaje:</strong> ${error.message}</p>
+            <p><strong>Código:</strong> ${error.code}</p>
+            <p>💡 Solución: Verifica las políticas RLS en Supabase</p>
+          </div>`;
           return;
         }
 
-        grid.innerHTML = '';
-        
         if (!data || data.length === 0) {
-          grid.innerHTML = '<div class="loading">No hay productos. Agrega datos en Supabase.</div>';
+          document.getElementById('debug').innerHTML += '<br>⚠️ No hay productos';
+          grid.innerHTML = '<div class="error"><h3>📦 Sin Productos</h3><p>Agrega datos en Table Editor de Supabase</p></div>';
           return;
         }
 
-        data.forEach(p => {
+        // ÉXITO - Mostrar productos
+        document.getElementById('debug').innerHTML += `<br>✅ ${data.length} productos cargados`;        document.getElementById('debug').style.display = 'none'; // Ocultar debug si todo está bien
+        
+        grid.innerHTML = '';
+        data.forEach((p, index) => {
+          console.log(`Producto ${index}:`, p);
           const disc = p.original_price ? Math.round(((p.original_price - p.price)/p.original_price)*100) : 0;
           grid.innerHTML += `
             <div class="card">
-              <img src="${p.image}" alt="${p.title}">
+              <img src="${p.image || 'https://via.placeholder.com/150'}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/150?text=Sin+Imagen'">
               <div class="info">
                 <p class="title">${p.title}</p>
                 <div>
-                  <span class="price">$${p.price.toLocaleString('es-CO')}</span>
+                  <span class="price">$${(p.price || 0).toLocaleString('es-CO')}</span>
                   ${p.original_price ? `<span class="original">$${p.original_price.toLocaleString('es-CO')}</span>` : ''}
                 </div>
                 ${disc > 0 ? `<div style="color:#10B981; font-size:11px; font-weight:bold; margin-top:4px">-${disc}% OFF</div>` : ''}
@@ -87,11 +116,19 @@
             </div>
           `;
         });
+
       } catch (e) {
-        grid.innerHTML = '<div class="error">Error al cargar productos</div>';
+        console.error("Error inesperado:", e);
+        document.getElementById('debug').innerHTML += '<br>💥 Error inesperado: ' + e.message;
+        grid.innerHTML = `<div class="error">
+          <h3>⚠️ Error Inesperado</h3>
+          <p>${e.message}</p>
+          <p>Abre la consola del navegador (F12) para ver detalles</p>
+        </div>`;
       }
     }
 
+    // Cargar productos al iniciar
     loadProducts();
   </script>
 </body>
