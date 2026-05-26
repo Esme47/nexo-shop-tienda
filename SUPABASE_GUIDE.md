@@ -73,3 +73,19 @@ Asegúrate de que tu tabla `products` tenga estas columnas:
 *   `original_price`: numeric (opcional)
 *   `image`: text (URL de la imagen)
 *   `created_at`: timestamptz
+
+---
+
+## 5. Cómo Redesplegar en Vercel
+
+Si el despliegue anterior fue eliminado o necesitas uno nuevo, sigue estos pasos:
+
+1.  **Sube los cambios a GitHub**: Asegúrate de que esta versión con las mejoras esté en tu repositorio.
+2.  **Conecta a Vercel**:
+    - Ve a [vercel.com](https://vercel.com) e inicia sesión.
+    - Haz clic en **"Add New"** > **"Project"**.
+    - Importa tu repositorio `nexo-shop-tienda`.
+3.  **Configuración**:
+    - No necesitas cambiar los "Build Settings" ya que es un sitio estático.
+    - Haz clic en **"Deploy"**.
+4.  **Verificación**: Vercel te dará una nueva URL (ej: `nexo-shop-tienda.vercel.app`). ¡Esa será tu tienda actualizada!
