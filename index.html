@@ -14,6 +14,7 @@
     .badge { position: absolute; top: -5px; right: -5px; background: #EC4899; color: white; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
     
     .container { padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .container.hidden { display: none; }
     .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(236, 72, 153, 0.1); border: 2px solid #FBCFE8; }
     .card img { width: 100%; height: 160px; object-fit: cover; transition: transform 0.3s; }
     .card:hover img { transform: scale(1.05); }
@@ -29,8 +30,27 @@
     .error { color: red; text-align: center; padding: 20px; grid-column: 1 / -1; background: #fff; border-radius: 10px; margin: 20px; }
     .debug { background: #fff3cd; padding: 15px; margin: 10px; border-radius: 8px; text-align: left; font-size: 12px; display: none; }
     
+    /* CART STYLES */
+    .cart-view { display: none; padding: 16px; }
+    .cart-view.active { display: block; }
+    .cart-item { background: white; padding: 12px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(236,72,153,0.1); display: flex; gap: 12px; align-items: center; }
+    .cart-item img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; }
+    .cart-item-info { flex: 1; }
+    .cart-item-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+    .cart-item-price { color: #DB2777; font-weight: 800; font-size: 14px; }
+    .qty-control { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .qty-btn { width: 28px; height: 28px; background: #FFF0F6; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; color: #EC4899; }
+    .qty-val { font-weight: 700; min-width: 24px; text-align: center; }
+    .cart-total { background: white; padding: 20px; border-radius: 12px; margin-top: 20px; text-align: center; }
+    .cart-total h3 { margin: 0 0 10px; font-size: 20px; }
+    .total-price { font-size: 28px; font-weight: 900; color: #DB2777; margin: 10px 0; }
+    .btn-checkout { background: linear-gradient(135deg, #EC4899, #A855F7); color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; width: 100%; margin-top: 12px; }
+    .btn-back { background: #f3f4f5; color: #111827; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; margin-bottom: 16px; }
+    .empty-cart { text-align: center; padding: 60px 20px; color: #6B7280; }
+    .empty-cart-icon { font-size: 64px; margin-bottom: 16px; }
+
     .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; }
-    .nav-item { font-size: 12px; font-weight: 700; color: #6B7280; text-decoration: none; }
+    .nav-item { font-size: 12px; font-weight: 700; color: #6B7280; text-decoration: none; cursor: pointer; }
     .nav-item.active { color: #EC4899; }
   </style>
 </head>
@@ -38,45 +58,177 @@
 
   <header>
     <div class="logo">NEXO Shop</div>
-    <button class="cart-btn">🛒<span class="badge" id="badge">0</span></button>
+    <button class="cart-btn" id="headerCartBtn">🛒<span class="badge" id="badge">0</span></button>
   </header>
 
+  <!-- PRODUCT VIEW -->
   <div class="container" id="grid">
     <div class="loading">🔄 Conectando a Supabase...</div>
     <div class="debug" id="debug"></div>
   </div>
 
+  <!-- CART VIEW -->
+  <div class="cart-view" id="cartView">
+    <button class="btn-back" id="backToStoreBtn">← Volver a la tienda</button>
+    <h2 style="margin-top:0">🛒 Tu Carrito</h2>
+    <div id="cartItems"></div>
+    <div class="cart-total" id="cartTotal" style="display:none">
+      <h3>Total</h3>
+      <div class="total-price" id="totalPrice">$0</div>
+      <button class="btn-checkout" id="checkoutBtn">Finalizar Compra</button>
+    </div>
+  </div>
+
   <nav class="nav">
-    <a class="nav-item active">🏠 Inicio</a>
-    <a class="nav-item">🧭 Categorías</a>
-    <a class="nav-item">🛒 Carrito</a>
+    <a class="nav-item active" id="navHome">🏠 Inicio</a>
+    <a class="nav-item" id="navCat">🧭 Categorías</a>
+    <a class="nav-item" id="navCart">🛒 Carrito</a>
   </nav>
+
   <script>
-    // 🔑 CONFIGURACIÓN - REEMPLAZA CON TUS DATOS REALES la
+    // 🔑 CONFIGURACIÓN
     const SUPABASE_URL = 'https://clqapqrqhiykejufrlml.supabase.co'
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNscWFwcXJxaGl5a2VqdWZybG1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTUzMDEsImV4cCI6MjA5Mzc5MTMwMX0.L0UB2QWT3Jgouducr2An842QouLrPQ6yIpHOX5Oq2eQ'
     
     // 🛒 Carrito de Compras
     let cart = JSON.parse(localStorage.getItem('nexo_cart')) || [];
+    let products = [];
 
     function updateBadge() {
       const badge = document.getElementById('badge');
-      const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+      const totalItems = cart.reduce((acc, item) => acc + (item.quantity || item.qty || 0), 0);
       badge.innerText = totalItems;
       badge.style.display = totalItems > 0 ? 'flex' : 'none';
+    }
+
+    function saveCart() {
+      localStorage.setItem('nexo_cart', JSON.stringify(cart));
     }
 
     function addToCart(product) {
       const existing = cart.find(item => item.id === product.id);
       if (existing) {
-        existing.quantity += 1;
+        existing.quantity = (existing.quantity || existing.qty || 0) + 1;
       } else {
         cart.push({ ...product, quantity: 1 });
       }
-      localStorage.setItem('nexo_cart', JSON.stringify(cart));
+      saveCart();
       updateBadge();
       alert(`✅ ${product.title} añadido al carrito`);
     }
+
+    // NAVEGACIÓN
+    function showHome() {
+      document.getElementById('grid').classList.remove('hidden');
+      document.getElementById('cartView').classList.remove('active');
+      document.getElementById('navHome').classList.add('active');
+      document.getElementById('navCart').classList.remove('active');
+    }
+
+    function showCart() {
+      document.getElementById('grid').classList.add('hidden');
+      document.getElementById('cartView').classList.add('active');
+      document.getElementById('navHome').classList.remove('active');
+      document.getElementById('navCart').classList.add('active');
+      renderCart();
+    }
+
+    // EVENT LISTENERS NAVEGACIÓN
+    document.getElementById('navHome').addEventListener('click', showHome);
+    document.getElementById('navCart').addEventListener('click', showCart);
+    document.getElementById('headerCartBtn').addEventListener('click', showCart);
+    document.getElementById('backToStoreBtn').addEventListener('click', showHome);
+    document.getElementById('navCat').addEventListener('click', () => alert('Próximamente'));
+
+    // RENDERIZAR CARRITO
+    function renderCart() {
+      const container = document.getElementById('cartItems');
+      const totalDiv = document.getElementById('cartTotal');
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <h3>Tu carrito está vacío</h3>
+            <p>Agrega productos para comenzar</p>
+          </div>
+        `;
+        totalDiv.style.display = 'none';
+        return;
+      }
+
+      container.innerHTML = '';
+      let total = 0;
+
+      cart.forEach(item => {
+        const qty = item.quantity || item.qty || 0;
+        const itemTotal = item.price * qty;
+        total += itemTotal;
+
+        const cartItem = document.createElement('div');
+        cartItem.className = 'cart-item';
+        cartItem.innerHTML = `
+          <img src="${item.image || 'https://via.placeholder.com/70'}" alt="${item.title}">
+          <div class="cart-item-info">
+            <div class="cart-item-title">${item.title}</div>
+            <div class="cart-item-price">$${itemTotal.toLocaleString('es-CO')}</div>
+            <div class="qty-control" id="qty-${item.id}">
+            </div>
+          </div>
+        `;
+
+        const qtyControl = cartItem.querySelector(`#qty-${item.id}`);
+
+        const minusBtn = document.createElement('button');
+        minusBtn.className = 'qty-btn';
+        minusBtn.textContent = '−';
+        minusBtn.onclick = () => updateQty(item.id, -1);
+
+        const qtyVal = document.createElement('span');
+        qtyVal.className = 'qty-val';
+        qtyVal.textContent = qty;
+
+        const plusBtn = document.createElement('button');
+        plusBtn.className = 'qty-btn';
+        plusBtn.textContent = '+';
+        plusBtn.onclick = () => updateQty(item.id, 1);
+
+        qtyControl.appendChild(minusBtn);
+        qtyControl.appendChild(qtyVal);
+        qtyControl.appendChild(plusBtn);
+
+        container.appendChild(cartItem);
+      });
+
+      document.getElementById('totalPrice').textContent = `$${total.toLocaleString('es-CO')}`;
+      totalDiv.style.display = 'block';
+    }
+
+    function updateQty(productId, change) {
+      const item = cart.find(item => item.id === productId);
+      if (!item) return;
+
+      const currentQty = item.quantity || item.qty || 0;
+      item.quantity = currentQty + change;
+      item.qty = item.quantity; // Mantener ambos por compatibilidad
+
+      if (item.quantity <= 0) {
+        cart = cart.filter(item => item.id !== productId);
+      }
+
+      saveCart();
+      updateBadge();
+      renderCart();
+    }
+
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      const total = cart.reduce((sum, item) => sum + (item.price * (item.quantity || item.qty || 0)), 0);
+      alert(`¡Gracias por tu compra!\nTotal: $${total.toLocaleString('es-CO')}\nEn el próximo paso integraremos la pasarela de pagos.`);
+      cart = [];
+      saveCart();
+      updateBadge();
+      showHome();
+    });
 
     // Mostrar info de debug (solo si hay ?debug=true en la URL)
     const urlParams = new URLSearchParams(window.location.search);
@@ -130,9 +282,12 @@
         // ÉXITO - Mostrar productos
         if (debugMode) debugEl.innerHTML += `<br>✅ ${data.length} productos cargados`;
         
+        // Limpiar excepto el div de debug
+        const debugNode = document.getElementById('debug');
         grid.innerHTML = '';
+        grid.appendChild(debugNode);
+
         data.forEach((p, index) => {
-          console.log(`Producto ${index}:`, p);
           const disc = p.original_price && p.original_price > p.price ? Math.round(((p.original_price - p.price)/p.original_price)*100) : 0;
 
           const card = document.createElement('div');
@@ -186,11 +341,10 @@
 
       } catch (e) {
         console.error("Error inesperado:", e);
-        document.getElementById('debug').innerHTML += '<br>💥 Error inesperado: ' + e.message;
+        if (debugMode) debugEl.innerHTML += '<br>💥 Error inesperado: ' + e.message;
         grid.innerHTML = `<div class="error">
           <h3>⚠️ Error Inesperado</h3>
           <p>${e.message}</p>
-          <p>Abre la consola del navegador (F12) para ver detalles</p>
         </div>`;
       }
     }
