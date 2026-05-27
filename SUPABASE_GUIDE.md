@@ -65,13 +65,28 @@ WITH CHECK (true);
 
 ---
 
-## 4. Estructura de Tabla Sugerida
-Asegúrate de que tu tabla `products` tenga estas columnas:
+## 4. Actualización del Esquema (Nuevas Funciones)
+Para que el filtrado por categorías y el detalle de productos funcionen, debes añadir estas columnas a tu tabla `products`.
+
+Ejecuta este SQL en el panel de Supabase:
+```sql
+-- Añadir nuevas columnas necesarias
+ALTER TABLE products ADD COLUMN IF NOT EXISTS category text DEFAULT 'Ropa';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS description text;
+
+-- Ejemplo para actualizar productos existentes
+UPDATE products SET category = 'Calzado' WHERE title ILIKE '%tenis%' OR title ILIKE '%zapatos%';
+UPDATE products SET category = 'Accesorios' WHERE title ILIKE '%bolso%' OR title ILIKE '%reloj%';
+```
+
+**Estructura Completa Sugerida:**
 *   `id`: int8 (Primary Key)
 *   `title`: text
 *   `price`: numeric
 *   `original_price`: numeric (opcional)
 *   `image`: text (URL de la imagen)
+*   `category`: text (Ropa, Calzado, Accesorios)
+*   `description`: text (Descripción larga del producto)
 *   `created_at`: timestamptz
 
 ---
