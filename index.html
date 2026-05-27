@@ -347,21 +347,62 @@
       document.getElementById('badge').textContent = count;
     }
 
-    // CHECKOUT
-    function checkout() {
+    // CHECKOUT REAL: Guarda pedido en Supabase + Envía a WhatsApp
+    async function checkout() {
       if (cart.length === 0) {
         alert('El carrito está vacío');
         return;
       }
 
+      // Pedir datos básicos al cliente
+      const nombre = prompt(' Ingresa tu nombre completo:');
+      if (!nombre) return;
+
+      const telefono = prompt('📱 Ingresa tu número de WhatsApp (ej: 3018442704):');
+      if (!telefono) return;
+
       const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-      alert(`¡Gracias por tu compra!\n\nTotal: $${total.toLocaleString('es-CO')}\n\nEn el próximo paso integraremos la pasarela de pagos.`);
+      try {
+        // 1️⃣ Guardar pedido en Supabase
+        const { error } = await supabaseClient.from('orders').insert([{
+          customer_name: nombre,
+          customer_phone: telefono,
+          total: total,
+          items: JSON.stringify(cart),
+          status: 'pending'
+        }]);
 
-      cart = [];
-      saveCart();
-      updateBadge();
-      showHome();
+        if (error) throw error;
+
+        // 2️ Formatar mensaje para WhatsApp
+        let mensaje = `🛒 *NUEVO PEDIDO - NEXO Shop*\n\n`;
+        mensaje += `👤 Cliente: ${nombre}\n`;
+        mensaje += `📱 Tel: ${telefono}\n\n`;
+        mensaje += `📦 *Productos:*\n`;
+        cart.forEach(item => {
+          mensaje += `• ${item.title} x${item.qty} = $${(item.price * item.qty).toLocaleString('es-CO')}\n`;
+        });
+        mensaje += `\n💰 *TOTAL: $${total.toLocaleString('es-CO')}*\n`;
+        mensaje += `📍 Montería, Colombia\n\n`;
+        mensaje += `¿Cómo puedo proceder al pago? (Nequi, Daviplata, Transferencia o Efectivo)`;
+
+        // 3️⃣ Enviar a tu WhatsApp
+        const whatsappURL = `https://wa.me/573018442704?text=${encodeURIComponent(mensaje)}`;
+        window.open(whatsappURL, '_blank');
+
+        // 4️⃣ Limpiar carrito y volver al inicio
+        cart = [];
+        saveCart();
+        updateBadge();
+        showHome();
+
+        alert('✅ Pedido enviado. Te contactaremos por WhatsApp para coordinar el pago y envío.');
+
+      } catch (e) {
+        console.error(e);
+        alert('️ Hubo un error al procesar tu pedido. Intenta nuevamente.');
+      }
     }
 
     // INICIALIZAR
