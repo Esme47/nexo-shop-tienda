@@ -4,166 +4,415 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NEXO Shop</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+    * { box-sizing: border-box; }
     body { font-family: 'Poppins', sans-serif; background: #FFF0F6; margin: 0; padding-bottom: 80px; color: #111827; }
-    header { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
-    .logo { font-size: 22px; font-weight: 900; color: #EC4899; }
+    header { background: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+    .logo-container { display: flex; align-items: center; gap: 10px; }
+    .logo-img { height: 40px; width: auto; border-radius: 8px; }
+    .logo-text { font-size: 22px; font-weight: 900; color: #EC4899; }
     .cart-btn { background: #FFF0F6; border: none; padding: 8px 12px; border-radius: 12px; font-size: 20px; position: relative; cursor: pointer; }
     .badge { position: absolute; top: -5px; right: -5px; background: #EC4899; color: white; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
     
-    .container { padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(236, 72, 153, 0.1); border: 2px solid #FBCFE8; }
-    .card img { width: 100%; height: 160px; object-fit: cover; transition: transform 0.3s; }
-    .card:hover img { transform: scale(1.05); }
-    .info { padding: 12px; display: flex; flex-direction: column; gap: 4px; }
-    .title { font-size: 14px; font-weight: 700; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 40px; }
-    .price { font-size: 18px; font-weight: 900; color: #DB2777; }
-    .original { font-size: 12px; color: #9CA3AF; text-decoration: line-through; margin-left: 4px; }
-    
-    .add-btn { background: #EC4899; color: white; border: none; padding: 8px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 8px; font-size: 12px; transition: background 0.2s; }
-    .add-btn:hover { background: #DB2777; }
+    .container { padding: 16px; }
+    .category-filter { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; margin-bottom: 16px; -webkit-overflow-scrolling: touch; }
+    .category-btn { background: white; border: 2px solid #FBCFE8; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
+    .category-btn.active { background: #EC4899; color: white; border-color: #EC4899; }
 
-    .loading { text-align: center; padding: 40px; color: #6B7280; grid-column: 1 / -1; }
-    .error { color: red; text-align: center; padding: 20px; grid-column: 1 / -1; background: #fff; border-radius: 10px; margin: 20px; }
-    .debug { background: #fff3cd; padding: 15px; margin: 10px; border-radius: 8px; text-align: left; font-size: 12px; display: none; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(236, 72, 153, 0.1); border: 2px solid #FBCFE8; cursor: pointer; transition: transform 0.2s; }
+    .card:active { transform: scale(0.98); }
+    .card img { width: 100%; height: 140px; object-fit: cover; }
+    .info { padding: 10px; }
+    .title { font-size: 13px; font-weight: 700; margin: 0 0 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .price { font-size: 16px; font-weight: 900; color: #DB2777; }
+    .original { font-size: 11px; color: #6B7280; text-decoration: line-through; margin-left: 5px; }
+    .btn-add { background: linear-gradient(135deg, #EC4899, #A855F7); color: white; border: none; padding: 10px; border-radius: 10px; width: 100%; margin-top: 8px; font-weight: 700; cursor: pointer; }
     
+    /* PRODUCT DETAIL MODAL */
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: flex-end; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; width: 100%; border-radius: 24px 24px 0 0; padding: 24px 16px; max-height: 85vh; overflow-y: auto; animation: slideUp 0.3s; }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-close { position: absolute; top: 16px; right: 16px; background: white; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .modal-img { width: 100%; height: 250px; object-fit: cover; border-radius: 16px; margin-bottom: 16px; }
+    .modal-title { font-size: 22px; font-weight: 800; margin: 0 0 12px; }
+    .modal-price { font-size: 24px; font-weight: 900; color: #DB2777; margin-bottom: 16px; }
+    .modal-desc { color: #6B7280; line-height: 1.6; margin-bottom: 20px; padding: 16px; background: #FFF0F6; border-radius: 12px; }
+    .modal-features { margin: 16px 0; }
+    .modal-features li { margin: 8px 0; color: #374151; }
+
+    /* CART STYLES */
+    .cart-view { display: none; padding: 16px; }
+    .cart-view.active { display: block; }
+    .cart-item { background: white; padding: 12px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(236,72,153,0.1); display: flex; gap: 12px; align-items: center; }
+    .cart-item img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; }
+    .cart-item-info { flex: 1; }
+    .cart-item-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+    .cart-item-price { color: #DB2777; font-weight: 800; font-size: 14px; }
+    .qty-control { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .qty-btn { width: 28px; height: 28px; background: #FFF0F6; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; color: #EC4899; }
+    .qty-val { font-weight: 700; min-width: 24px; text-align: center; }
+    .cart-total { background: white; padding: 20px; border-radius: 12px; margin-top: 20px; text-align: center; }
+    .cart-total h3 { margin: 0 0 10px; font-size: 20px; }
+    .total-price { font-size: 28px; font-weight: 900; color: #DB2777; margin: 10px 0; }
+    .btn-checkout { background: linear-gradient(135deg, #EC4899, #A855F7); color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; width: 100%; margin-top: 12px; }
+    .btn-back { background: #f3f4f5; color: #111827; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; margin-bottom: 16px; }
+    .empty-cart { text-align: center; padding: 60px 20px; color: #6B7280; }
+    .empty-cart-icon { font-size: 64px; margin-bottom: 16px; }
+
     .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; }
-    .nav-item { font-size: 12px; font-weight: 700; color: #6B7280; text-decoration: none; }
+    .nav-item { font-size: 12px; font-weight: 700; color: #6B7280; text-decoration: none; cursor: pointer; }
     .nav-item.active { color: #EC4899; }
+
+    .hidden { display: none !important; }
+    .loading { text-align: center; padding: 40px; color: #6B7280; grid-column: 1 / -1; }
   </style>
 </head>
 <body>
-
   <header>
-    <div class="logo">NEXO Shop</div>
-    <button class="cart-btn">🛒<span class="badge" id="badge">0</span></button>
+    <div class="logo-container">
+      <img src="logo.png" alt="NEXO" class="logo-img" onerror="this.style.display='none'">
+      <div class="logo-text">NEXO Shop</div>
+    </div>
+    <button class="cart-btn" onclick="showCart()">🛒<span class="badge" id="badge">0</span></button>
   </header>
 
-  <div class="container" id="grid">
-    <div class="loading">🔄 Conectando a Supabase...</div>
-    <div class="debug" id="debug"></div>
+  <!-- PRODUCT VIEW -->
+  <div class="container" id="productView">
+    <h2 style="margin: 16px 0 8px; font-size: 18px;">Categorías</h2>
+    <div class="category-filter" id="categoryFilter">
+      <button class="category-btn active" onclick="filterCategory('all')">Todas</button>
+      <button class="category-btn" onclick="filterCategory('Ropa')">Ropa</button>
+      <button class="category-btn" onclick="filterCategory('Calzado')">Calzado</button>
+      <button class="category-btn" onclick="filterCategory('Accesorios')">Accesorios</button>
+    </div>
+
+    <div class="grid" id="productGrid">
+      <div class="loading">🔄 Cargando productos...</div>
+    </div>
+  </div>
+
+  <!-- PRODUCT DETAIL MODAL -->
+  <div class="modal" id="productModal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-content">
+      <img class="modal-img" id="modalImg" src="" alt="">
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <div class="modal-price" id="modalPrice"></div>
+      <div class="modal-desc" id="modalDesc"></div>
+      <ul class="modal-features">
+        <li>✓ Producto 100% original</li>
+        <li>✓ Envío a todo Colombia</li>
+        <li>✓ Garantía de 30 días</li>
+        <li>✓ Pago seguro</li>
+      </ul>
+      <button class="btn-add" id="modalAddBtn" style="padding: 14px; font-size: 16px;">Agregar al Carrito</button>
+    </div>
+  </div>
+
+  <!-- CART VIEW -->
+  <div class="cart-view" id="cartView">
+    <button class="btn-back" onclick="showHome()">← Volver a la tienda</button>
+    <h2 style="margin-top:0">🛒 Tu Carrito</h2>
+    <div id="cartItems"></div>
+    <div class="cart-total" id="cartTotal" style="display:none">
+      <h3>Total</h3>
+      <div class="total-price" id="totalPrice">$0</div>
+      <button class="btn-checkout" onclick="checkout()">Finalizar Compra</button>
+    </div>
   </div>
 
   <nav class="nav">
-    <a class="nav-item active">🏠 Inicio</a>
-    <a class="nav-item">🧭 Categorías</a>
-    <a class="nav-item">🛒 Carrito</a>
+    <a class="nav-item active" onclick="showHome()" id="navHome">🏠 Inicio</a>
+    <a class="nav-item" onclick="showCategories()" id="navCategories">🧭 Categorías</a>
+    <a class="nav-item" onclick="showCart()" id="navCart">🛒 Carrito</a>
   </nav>
+
   <script>
-    // 🔑 CONFIGURACIÓN - REEMPLAZA CON TUS DATOS REALES la
-    const SUPABASE_URL = 'https://clqapqrqhiykejufrlml.supabase.co'
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNscWFwcXJxaGl5a2VqdWZybG1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTUzMDEsImV4cCI6MjA5Mzc5MTMwMX0.L0UB2QWT3Jgouducr2An842QouLrPQ6yIpHOX5Oq2eQ'
-    
-    // 🛒 Carrito de Compras
+    // === CONFIGURACIÓN DE SUPABASE ===
+    const SUPABASE_URL = 'https://clqapqrqhiykejufrlml.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNscWFwcXJxaGl5a2VqdWZybG1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTUzMDEsImV4cCI6MjA5Mzc5MTMwMX0.L0UB2QWT3Jgouducr2An842QouLrPQ6yIpHOX5Oq2eQ';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
     let cart = JSON.parse(localStorage.getItem('nexo_cart')) || [];
+    let products = [];
+    let currentCategory = 'all';
+    let currentProduct = null;
 
-    function updateBadge() {
-      const badge = document.getElementById('badge');
-      const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-      badge.innerText = totalItems;
-      badge.style.display = totalItems > 0 ? 'flex' : 'none';
+    // NAVEGACIÓN
+    function showHome() {
+      document.getElementById('productView').classList.remove('hidden');
+      document.getElementById('cartView').classList.remove('active');
+      document.querySelectorAll('.nav-item').forEach((item, i) => {
+        item.classList.toggle('active', i === 0);
+      });
+      window.scrollTo(0, 0);
     }
 
-    function addToCart(product) {
-      const existing = cart.find(item => item.id === product.id);
-      if (existing) {
-        existing.quantity += 1;
-      } else {
-        cart.push({ ...product, quantity: 1 });
-      }
-      localStorage.setItem('nexo_cart', JSON.stringify(cart));
-      updateBadge();
-      alert(`✅ ${product.title} añadido al carrito`);
+    function showCategories() {
+      document.getElementById('productView').classList.remove('hidden');
+      document.getElementById('cartView').classList.remove('active');
+      document.querySelectorAll('.nav-item').forEach((item, i) => {
+        item.classList.toggle('active', i === 1);
+      });
+      document.getElementById('categoryFilter').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Mostrar info de debug (solo si hay ?debug=true en la URL)
-    const urlParams = new URLSearchParams(window.location.search);
-    const debugMode = urlParams.has('debug');
-    const debugEl = document.getElementById('debug');
-    if (debugMode) debugEl.style.display = 'block';
-
-    debugEl.innerHTML = `
-      <strong>🔍 Debug:</strong><br>
-      URL: ${SUPABASE_URL}<br>
-      Key: ${SUPABASE_KEY.substring(0, 20)}...${SUPABASE_KEY.substring(SUPABASE_KEY.length - 10)}<br>
-      Conectando...
-    `;
-
-    // Crear cliente
-    let supabase;
-    try {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      if (debugMode) debugEl.innerHTML += '<br>✅ Cliente Supabase creado';
-    } catch (e) {
-      if (debugMode) debugEl.innerHTML += '<br>❌ Error creando cliente: ' + e.message;
+    function showCart() {
+      document.getElementById('productView').classList.add('hidden');
+      document.getElementById('cartView').classList.add('active');
+      document.querySelectorAll('.nav-item').forEach((item, i) => {
+        item.classList.toggle('active', i === 2);
+      });
+      renderCart();
+      window.scrollTo(0, 0);
     }
 
-    async function loadProducts() {
-      const grid = document.getElementById('grid');
-      
-      try {
-        if (debugMode) debugEl.innerHTML += '<br>🔄 Intentando cargar productos...';
-        
-        const { data, error } = await supabase.from('products').select('*');
-        
-        if (error) {
-          console.error("Error de Supabase:", error);
-          if (debugMode) debugEl.innerHTML += '<br>❌ Error: ' + error.message;
-          grid.innerHTML = `<div class="error">
-            <h3>⛔ Error de Conexión</h3>
-            <p>No pudimos cargar los productos en este momento.</p>
-            ${debugMode ? `<p><strong>Detalle:</strong> ${error.message}</p>` : ''}
-          </div>`;
-          return;
+    // FILTRAR POR CATEGORÍA
+    function filterCategory(category) {
+      currentCategory = category;
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.toLowerCase().includes(category.toLowerCase()) || (category === 'all' && btn.textContent === 'Todas')) {
+          btn.classList.add('active');
         }
+      });
+      renderProducts();
+    }
+
+    // CARGAR PRODUCTOS
+    async function loadProducts() {
+      const grid = document.getElementById('productGrid');
+
+      try {
+        const { data, error } = await supabaseClient.from('products').select('*');
+        if (error) throw error;
 
         if (!data || data.length === 0) {
-          if (debugMode) debugEl.innerHTML += '<br>⚠️ No hay productos';
-          grid.innerHTML = '<div class="error"><h3>📦 Tienda en mantenimiento</h3><p>Vuelve pronto para ver nuestras novedades.</p></div>';
+          grid.innerHTML = '<div class="loading"><h3>📦 Sin Productos</h3><p>Agrega datos en Supabase</p></div>';
           return;
         }
 
-        // ÉXITO - Mostrar productos
-        if (debugMode) debugEl.innerHTML += `<br>✅ ${data.length} productos cargados`;
-        
-        grid.innerHTML = '';
-        data.forEach((p, index) => {
-          console.log(`Producto ${index}:`, p);
-          const disc = p.original_price ? Math.round(((p.original_price - p.price)/p.original_price)*100) : 0;
+        products = data;
+        renderProducts();
 
-          const card = document.createElement('div');
-          card.className = 'card';
-          card.innerHTML = `
-            <img src="${p.image || 'https://via.placeholder.com/150'}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/150?text=Sin+Imagen'">
+      } catch (e) {
+        grid.innerHTML = `<div class="loading"><h3>⛔ Error</h3><p>${e.message}</p></div>`;
+        console.error(e);
+      }
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('productGrid');
+      const filtered = currentCategory === 'all' ? products : products.filter(p => p.category === currentCategory);
+
+      grid.innerHTML = '';
+      filtered.forEach(p => {
+        const disc = p.original_price ? Math.round(((p.original_price - p.price)/p.original_price)*100) : 0;
+        grid.innerHTML += `
+          <div class="card" onclick="openProductModal(${p.id})">
+            <img src="${p.image || 'https://via.placeholder.com/150'}" alt="${p.title}">
             <div class="info">
               <p class="title">${p.title}</p>
               <div>
                 <span class="price">$${(p.price || 0).toLocaleString('es-CO')}</span>
                 ${p.original_price ? `<span class="original">$${p.original_price.toLocaleString('es-CO')}</span>` : ''}
               </div>
-              ${disc > 0 ? `<div style="color:#10B981; font-size:11px; font-weight:bold; margin-top:4px">-${disc}% OFF</div>` : ''}
-              <button class="add-btn" onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&apos;")})'>Agregar</button>
+              ${disc > 0 ? `<div style="color:#10B981;font-size:11px;font-weight:bold;margin:4px 0">-${disc}% OFF</div>` : ''}
+              <button class="btn-add" onclick="event.stopPropagation(); addToCart(${p.id})">Agregar</button>
             </div>
-          `;
-          grid.appendChild(card);
+          </div>
+        `;
+      });
+    }
+
+    // MODAL DE PRODUCTO
+    function openProductModal(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      currentProduct = product;
+      document.getElementById('modalImg').src = product.image || 'https://via.placeholder.com/250';
+      document.getElementById('modalTitle').textContent = product.title;
+      document.getElementById('modalPrice').textContent = `$${(product.price || 0).toLocaleString('es-CO')}`;
+
+      const disc = product.original_price ? Math.round(((product.original_price - product.price)/product.original_price)*100) : 0;
+      document.getElementById('modalDesc').innerHTML = `
+        <strong>${product.title}</strong><br><br>
+        ${product.description || 'Producto de alta calidad disponible en NEXO Shop. Envíos a toda Colombia.'}<br><br>
+        ${disc > 0 ? `<strong style="color:#10B981">¡Ahorra ${disc}%!</strong><br>` : ''}
+        Precio original: ${product.original_price ? `$${product.original_price.toLocaleString('es-CO')}` : 'N/A'}
+      `;
+
+      document.getElementById('modalAddBtn').onclick = () => {
+        addToCart(product.id);
+        closeModal();
+      };
+
+      document.getElementById('productModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('productModal').classList.remove('active');
+    }
+
+    // AGREGAR AL CARRITO
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      const existingItem = cart.find(item => item.id === productId);
+      if (existingItem) {
+        existingItem.qty++;
+      } else {
+        cart.push({
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          image: product.image,
+          qty: 1
         });
+      }
+
+      saveCart();
+      updateBadge();
+      alert('✅ Agregado al carrito');
+    }
+
+    // RENDERIZAR CARRITO
+    function renderCart() {
+      const container = document.getElementById('cartItems');
+      const totalDiv = document.getElementById('cartTotal');
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <h3>Tu carrito está vacío</h3>
+            <p>Agrega productos para comenzar</p>
+          </div>
+        `;
+        totalDiv.style.display = 'none';
+        return;
+      }
+
+      container.innerHTML = '';
+      let total = 0;
+
+      cart.forEach(item => {
+        const itemTotal = item.price * item.qty;
+        total += itemTotal;
+
+        container.innerHTML += `
+          <div class="cart-item">
+            <img src="${item.image || 'https://via.placeholder.com/70'}" alt="${item.title}">
+            <div class="cart-item-info">
+              <div class="cart-item-title">${item.title}</div>
+              <div class="cart-item-price">$${itemTotal.toLocaleString('es-CO')}</div>
+              <div class="qty-control">
+                <button class="qty-btn" onclick="updateQty(${item.id}, -1)">−</button>
+                <span class="qty-val">${item.qty}</span>
+                <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      document.getElementById('totalPrice').textContent = `$${total.toLocaleString('es-CO')}`;
+      totalDiv.style.display = 'block';
+    }
+
+    // ACTUALIZAR CANTIDAD
+    function updateQty(productId, change) {
+      const item = cart.find(item => item.id === productId);
+      if (!item) return;
+
+      item.qty += change;
+      if (item.qty <= 0) {
+        cart = cart.filter(item => item.id !== productId);
+      }
+
+      saveCart();
+      updateBadge();
+      renderCart();
+    }
+
+    // GUARDAR CARRITO
+    function saveCart() {
+      localStorage.setItem('nexo_cart', JSON.stringify(cart));
+    }
+
+    // ACTUALIZAR BADGE
+    function updateBadge() {
+      const count = cart.reduce((sum, item) => sum + item.qty, 0);
+      document.getElementById('badge').textContent = count;
+    }
+
+    // CHECKOUT REAL: Guarda pedido en Supabase + Envía a WhatsApp
+    async function checkout() {
+      if (cart.length === 0) {
+        alert('El carrito está vacío');
+        return;
+      }
+
+      const nombre = prompt(' Ingresa tu nombre completo:');
+      if (!nombre) return;
+
+      const telefono = prompt('📱 Ingresa tu número de WhatsApp (ej: 3018442704):');
+      if (!telefono) return;
+
+      const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+      try {
+        const { error } = await supabaseClient.from('orders').insert([{
+          customer_name: nombre,
+          customer_phone: telefono,
+          total: total,
+          items: JSON.stringify(cart),
+          status: 'pending'
+        }]);
+
+        if (error) {
+          console.error('Error al guardar:', error);
+          alert('Error al guardar el pedido: ' + error.message);
+          return;
+        }
+
+        // WhatsApp...
+        let mensaje = `🛒 *NUEVO PEDIDO - NEXO Shop*\n\n`;
+        mensaje += `👤 Cliente: ${nombre}\n`;
+        mensaje += `📱 Tel: ${telefono}\n\n`;
+        mensaje += `📦 *Productos:*\n`;
+        cart.forEach(item => {
+          mensaje += `• ${item.title} x${item.qty} = $${(item.price * item.qty).toLocaleString('es-CO')}\n`;
+        });
+        mensaje += `\n💰 *TOTAL: $${total.toLocaleString('es-CO')}*\n`;
+        mensaje += `📍 Montería, Colombia\n\n`;
+        mensaje += `¿Cómo puedo proceder al pago?`;
+
+        const whatsappURL = `https://wa.me/573018442704?text=${encodeURIComponent(mensaje)}`;
+        window.open(whatsappURL, '_blank');
+
+        cart = [];
+        saveCart();
+        updateBadge();
+        showHome();
+
+        alert('✅ Pedido guardado. Te contactaremos por WhatsApp.');
 
       } catch (e) {
-        console.error("Error inesperado:", e);
-        document.getElementById('debug').innerHTML += '<br>💥 Error inesperado: ' + e.message;
-        grid.innerHTML = `<div class="error">
-          <h3>⚠️ Error Inesperado</h3>
-          <p>${e.message}</p>
-          <p>Abre la consola del navegador (F12) para ver detalles</p>
-        </div>`;
+        console.error(e);
+        alert(' Hubo un error. Intenta nuevamente.');
       }
     }
 
-    // Cargar productos al iniciar
-    updateBadge();
+    // INICIALIZAR
     loadProducts();
+    updateBadge();
   </script>
 </body>
 </html>
