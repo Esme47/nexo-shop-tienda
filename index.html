@@ -354,7 +354,6 @@
         return;
       }
 
-      // Pedir datos básicos al cliente
       const nombre = prompt(' Ingresa tu nombre completo:');
       if (!nombre) return;
 
@@ -364,7 +363,6 @@
       const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
       try {
-        // 1️⃣ Guardar pedido en Supabase
         const { error } = await supabaseClient.from('orders').insert([{
           customer_name: nombre,
           customer_phone: telefono,
@@ -373,9 +371,13 @@
           status: 'pending'
         }]);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error al guardar:', error);
+          alert('Error al guardar el pedido: ' + error.message);
+          return;
+        }
 
-        // 2️ Formatar mensaje para WhatsApp
+        // WhatsApp...
         let mensaje = `🛒 *NUEVO PEDIDO - NEXO Shop*\n\n`;
         mensaje += `👤 Cliente: ${nombre}\n`;
         mensaje += `📱 Tel: ${telefono}\n\n`;
@@ -385,23 +387,21 @@
         });
         mensaje += `\n💰 *TOTAL: $${total.toLocaleString('es-CO')}*\n`;
         mensaje += `📍 Montería, Colombia\n\n`;
-        mensaje += `¿Cómo puedo proceder al pago? (Nequi, Daviplata, Transferencia o Efectivo)`;
+        mensaje += `¿Cómo puedo proceder al pago?`;
 
-        // 3️⃣ Enviar a tu WhatsApp
         const whatsappURL = `https://wa.me/573018442704?text=${encodeURIComponent(mensaje)}`;
         window.open(whatsappURL, '_blank');
 
-        // 4️⃣ Limpiar carrito y volver al inicio
         cart = [];
         saveCart();
         updateBadge();
         showHome();
 
-        alert('✅ Pedido enviado. Te contactaremos por WhatsApp para coordinar el pago y envío.');
+        alert('✅ Pedido guardado. Te contactaremos por WhatsApp.');
 
       } catch (e) {
         console.error(e);
-        alert('️ Hubo un error al procesar tu pedido. Intenta nuevamente.');
+        alert(' Hubo un error. Intenta nuevamente.');
       }
     }
 
