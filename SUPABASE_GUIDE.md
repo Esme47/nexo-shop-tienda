@@ -61,7 +61,7 @@ WITH CHECK (true);
 
 *   **Diseño:** Interfaz limpia y amigable para móviles. Se ha mejorado el contraste y los efectos visuales.
 *   **Funcionalidad:** Se añadió un sistema de carrito basado en `localStorage` para que los usuarios puedan guardar productos sin necesidad de login.
-*   **Seguridad:** Se implementó un "Modo Debug" que oculta los errores técnicos a los clientes finales (solo visible añadiendo `?debug` a la URL).
+*   **Seguridad:** Se han configurado los controles de errores para no mostrar información técnica sensible a los clientes.
 
 ---
 
