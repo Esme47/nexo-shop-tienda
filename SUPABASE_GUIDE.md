@@ -1,100 +1,76 @@
-# Guía de Corrección: Supabase y Seguridad
+# Guía de Corrección: Supabase y Seguridad - NEXO Shop (Cursos Online)
 
-Esta guía detalla las fallas encontradas en la configuración de Supabase para NEXO Shop y cómo corregirlas.
+Esta guía detalla cómo configurar Supabase para que tu plataforma de cursos funcione correctamente y de forma segura.
 
-## 1. Diagnóstico de Fallas
+## 1. Configuración de la Tabla `products` (Cursos)
 
-### 🔐 Exposición de Credenciales
-*   **Falla:** La `SUPABASE_KEY` (anon key) está expuesta en el código fuente del frontend.
-*   **Valoración:** Esto es normal para aplicaciones de una sola página (SPA), pero **solo si el RLS (Row Level Security) está bien configurado**. Si el RLS no está activo o está mal configurado, cualquier usuario podría borrar o modificar todos tus productos.
+Para que el filtrado por categorías y el detalle de los cursos funcionen, asegúrate de que tu tabla `products` tenga estas columnas.
 
-### ⛔ Falla de Escritura (RLS)
-*   **Falla:** Se detectó el error `new row violates row-level security policy for table "products"` al intentar insertar datos desde fuera del editor de Supabase.
-*   **Valoración:** La tabla tiene RLS activado pero no tiene una política que permita inserciones (INSERT) para el rol `anon`.
+### Columnas Sugeridas:
+*   `id`: int8 (Primary Key)
+*   `title`: text
+*   `price`: numeric
+*   `original_price`: numeric (opcional)
+*   `image`: text (URL de la imagen)
+*   `category`: text (Ver categorías abajo)
+*   `description`: text (Descripción del curso)
+*   `created_at`: timestamptz
+
+### Categorías Actuales en el Código:
+- `Manicurista`
+- `Cejas y Pestañas`
+- `Emprendimiento`
+- `Decoradora de Fiestas`
+- `Repostería`
+- `Confección Textil`
+- `Cursos` (Otros)
 
 ---
 
-## 2. Cómo Corregir (Pasos en Supabase)
+## 2. Seguridad (Row Level Security - RLS)
 
-Copia y pega los siguientes comandos en el **SQL Editor** de tu panel de Supabase:
-
-### A. Habilitar Lectura Pública
-Permite que cualquier visitante pueda ver los productos (necesario para que la tienda funcione).
+Copia y pega esto en el **SQL Editor** de Supabase para permitir que los estudiantes vean los cursos y se inscriban:
 
 ```sql
--- Habilitar RLS
+-- 1. Habilitar RLS en ambas tablas
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 
--- Crear política de lectura para todos
-CREATE POLICY "Permitir lectura pública"
+-- 2. Permitir que cualquiera vea los cursos (Lectura Pública)
+CREATE POLICY "Permitir lectura pública de cursos"
 ON products FOR SELECT
 TO anon
 USING (true);
-```
 
-### B. Gestión Segura de Datos (Escritura)
-Para una tienda real, **NO** debes permitir que usuarios anónimos (`anon`) modifiquen tu base de datos.
-
-**Recomendación de Seguridad:**
-Las políticas de `INSERT`, `UPDATE` y `DELETE` deben estar restringidas a usuarios autenticados con rol de administrador.
-
-```sql
--- Ejemplo: Solo usuarios autenticados pueden insertar productos
-CREATE POLICY "Solo admin puede insertar"
-ON products FOR INSERT
-TO authenticated
-WITH CHECK (true);
-```
-
-Si decides permitir inserciones anónimas para pruebas (¡no recomendado en producción!), usa:
-```sql
--- Política temporal de prueba (BORRAR DESPUÉS)
-CREATE POLICY "Permitir inserción temporal anon"
-ON products FOR INSERT
+-- 3. Permitir que los estudiantes envíen sus datos de inscripción
+CREATE POLICY "Permitir inscripciones públicas"
+ON orders FOR INSERT
 TO anon
 WITH CHECK (true);
 ```
 
 ---
 
-## 3. Valoración General de la Tienda
+## 3. Insertar los Cursos Solicitados
 
-*   **Diseño:** Interfaz limpia y amigable para móviles. Se ha mejorado el contraste y los efectos visuales.
-*   **Funcionalidad:** Se añadió un sistema de carrito basado en `localStorage` para que los usuarios puedan guardar productos sin necesidad de login.
-*   **Seguridad:** Se han configurado los controles de errores para no mostrar información técnica sensible a los clientes.
-
----
-
-## 4. Actualización del Esquema (Nuevas Funciones)
-Para que el filtrado por categorías y el detalle de productos funcionen, debes añadir estas columnas a tu tabla `products`.
-
-Ejecuta este SQL en el panel de Supabase:
-```sql
--- Añadir nuevas columnas necesarias
-ALTER TABLE products ADD COLUMN IF NOT EXISTS category text DEFAULT 'Ropa';
-ALTER TABLE products ADD COLUMN IF NOT EXISTS description text;
-```
-
-### ⚡ Insertar Categoría "Cursos" (Ejemplos)
-Puedes copiar este código en el SQL Editor para agregar los cursos solicitados:
+Ejecuta este SQL para agregar los cursos con los que iniciaremos:
 
 ```sql
 INSERT INTO products (title, price, original_price, category, image, description)
 VALUES
-('Curso de Branding y Negocios', 65000, 110000, 'Cursos', 'https://i.postimg.cc/t4DPwXZP/file-00000000273071f998a590043cb5b39c.png', 'Aprende a construir tu marca personal y estrategias de branding que conectan con tus clientes. Lleva tu negocio de uñas al siguiente nivel con técnicas profesionales de marketing y posicionamiento.'),
-('Curso de Marketing Digital desde Cero', 85000, 150000, 'Cursos', 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?w=400', 'Aprende a crear campañas en redes sociales, SEO y email marketing. Ideal para emprendedores.'),
+('Curso de Branding y Negocios', 65000, 110000, 'Emprendimiento', 'https://i.postimg.cc/t4DPwXZP/file-00000000273071f998a590043cb5b39c.png', 'Aprende a construir tu marca personal y estrategias de branding que conectan con tus clientes. Lleva tu negocio al siguiente nivel.'),
+('Curso de Marketing Digital desde Cero', 85000, 150000, 'Emprendimiento', 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?w=400', 'Aprende a crear campañas en redes sociales, SEO y email marketing. Ideal para emprendedores.'),
 ('Excel Avanzado para Contadores', 60000, 100000, 'Cursos', 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400', 'Domina tablas dinámicas, macros y fórmulas complejas. Certificado incluido.'),
-('Curso de Repostería Artesanal', 45000, 80000, 'Cursos', 'https://images.unsplash.com/photo-1556910103-1c02745a30bf?w=400', 'Aprende a hacer postres deliciosos y vende tus propios productos desde casa.');
+('Curso de Repostería Artesanal', 45000, 80000, 'Repostería', 'https://images.unsplash.com/photo-1556910103-1c02745a30bf?w=400', 'Aprende a hacer postres deliciosos y vende tus propios productos desde casa.');
 ```
 
 ---
 
-## 5. Configuración de Pedidos (Orders)
-Para recibir pedidos, debes crear la tabla `orders` y permitir que los clientes envíen sus datos.
+## 4. Estructura de la Tabla `orders` (Inscripciones)
 
-Ejecuta este SQL en el panel de Supabase:
+Para recibir las inscripciones, crea la tabla `orders` con este comando:
+
 ```sql
--- 1. Crear tabla de pedidos
 CREATE TABLE IF NOT EXISTS orders (
   id int8 GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
   customer_name text NOT NULL,
@@ -104,35 +80,11 @@ CREATE TABLE IF NOT EXISTS orders (
   status text DEFAULT 'pending',
   created_at timestamptz DEFAULT now()
 );
-
--- 2. Habilitar RLS
-ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
-
--- 3. Permitir que cualquiera pueda insertar un pedido (para clientes)
-CREATE POLICY "Allow public insert orders"
-ON orders FOR INSERT
-TO anon
-WITH CHECK (true);
-
--- 4. Solo el administrador (autenticado) puede ver los pedidos
-CREATE POLICY "Only admin can view orders"
-ON orders FOR SELECT
-TO authenticated
-USING (true);
 ```
 
 ---
 
-## 6. Cómo Redesplegar en Vercel
-
-Si el despliegue anterior fue eliminado o necesitas uno nuevo, sigue estos pasos:
-
-1.  **Sube los cambios a GitHub**: Asegúrate de que esta versión con las mejoras esté en tu repositorio.
-2.  **Conecta a Vercel**:
-    - Ve a [vercel.com](https://vercel.com) e inicia sesión.
-    - Haz clic en **"Add New"** > **"Project"**.
-    - Importa tu repositorio `nexo-shop-tienda`.
-3.  **Configuración**:
-    - No necesitas cambiar los "Build Settings" ya que es un sitio estático.
-    - Haz clic en **"Deploy"**.
-4.  **Verificación**: Vercel te dará una nueva URL (ej: `nexo-shop-tienda.vercel.app`). ¡Esa será tu tienda actualizada!
+## 5. Valoración de la Plataforma
+*   **Enfoque:** Se ha transformado la tienda en una plataforma educativa profesional.
+*   **Seguridad:** RLS configurado para proteger los datos mientras permite la operación pública.
+*   **Conversión:** El flujo termina en WhatsApp, facilitando el cierre de venta y soporte directo.
