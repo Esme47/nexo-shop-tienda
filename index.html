@@ -91,14 +91,14 @@
   <main id="productView">
     <h2 style="margin: 16px 0 8px; font-size: 18px;">Categorías de Cursos</h2>
     <div class="category-filter" id="categoryFilter">
-      <button class="category-btn active" onclick="filterCategory('all')">Todos</button>
-      <button class="category-btn" onclick="filterCategory('Manicurista')">Manicurista</button>
-      <button class="category-btn" onclick="filterCategory('Cejas y Pestañas')">Cejas y Pestañas</button>
-      <button class="category-btn" onclick="filterCategory('Emprendimiento')">Emprendimiento</button>
-      <button class="category-btn" onclick="filterCategory('Decoradora de Fiestas')">Decoradora de Fiestas</button>
-      <button class="category-btn" onclick="filterCategory('Repostería')">Repostería</button>
-      <button class="category-btn" onclick="filterCategory('Confección Textil')">Confección Textil</button>
-      <button class="category-btn" onclick="filterCategory('Cursos')">Otros Cursos</button>
+      <button class="category-btn active" onclick="filterCategory(this, 'all')">Todos</button>
+      <button class="category-btn" onclick="filterCategory(this, 'Manicurista')">Manicurista</button>
+      <button class="category-btn" onclick="filterCategory(this, 'Cejas y Pestañas')">Cejas y Pestañas</button>
+      <button class="category-btn" onclick="filterCategory(this, 'Emprendimiento')">Emprendimiento</button>
+      <button class="category-btn" onclick="filterCategory(this, 'Decoradora de Fiestas')">Decoradora de Fiestas</button>
+      <button class="category-btn" onclick="filterCategory(this, 'Repostería')">Repostería</button>
+      <button class="category-btn" onclick="filterCategory(this, 'Confección Textil')">Confección Textil</button>
+      <button class="category-btn" onclick="filterCategory(this, 'Cursos')">Otros Cursos</button>
     </div>
 
     <div class="grid" id="productGrid">
@@ -256,15 +256,15 @@
   </footer>
 
   <nav class="nav">
-    <a class="nav-item active" onclick="showHome()">🏠 Inicio</a>
-    <a class="nav-item" onclick="showCategories()">🧭 Categorías</a>
-    <a class="nav-item" onclick="showCart()">🛒 Carrito</a>
+    <a class="nav-item active" onclick="showHome()" id="navHome">🏠 Inicio</a>
+    <a class="nav-item" onclick="showCategories()" id="navCategories">🧭 Categorías</a>
+    <a class="nav-item" onclick="showCart()" id="navCart">🛒 Carrito</a>
   </nav>
 
   <script>
     const SUPABASE_URL = 'https://clqapqrqhiykejufrlml.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNscWFwcXJxaGl5a2VqdWZybG1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTUzMDEsImV4cCI6MjA5Mzc5MTMwMX0.L0UB2QWT3Jgouducr2An842QouLrPQ6yIpHOX5Oq2eQ';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let cart = JSON.parse(localStorage.getItem('nexo_cart')) || [];
     let products = [];
@@ -314,20 +314,20 @@
       window.scrollTo(0, 0);
     }
 
-    function filterCategory(cat) {
+    function filterCategory(btn, cat) {
       currentCategory = cat;
-      document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if ((cat === 'all' && btn.textContent === 'Todos') || btn.textContent === cat) btn.classList.add('active');
-      });
+      document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
       renderProducts();
     }
 
     async function loadProducts() {
       const grid = document.getElementById('productGrid');
       try {
-        const { data, error } = await supabase.from('products').select('*');
+        console.log('Iniciando carga de productos...');
+        const { data, error } = await supabaseClient.from('products').select('*');
         if (error) throw error;
+        console.log('Productos cargados:', data?.length || 0);
         products = data || [];
         renderProducts();
       } catch (e) {
@@ -337,7 +337,7 @@
 
     function renderProducts() {
       const grid = document.getElementById('productGrid');
-      const filtered = currentCategory === 'all' ? products : products.filter(p => p.category === currentCategory);
+      const filtered = currentCategory === 'all' ? products : products.filter(p => p.category && p.category.toLowerCase() === currentCategory.toLowerCase());
       grid.innerHTML = '';
       filtered.forEach(p => {
         const disc = p.original_price ? Math.round(((p.original_price - p.price)/p.original_price)*100) : 0;
@@ -437,7 +437,7 @@
       const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
 
       try {
-        await supabase.from('orders').insert([{ customer_name: nombre, customer_phone: telefono, total, items: JSON.stringify(cart), status: 'pending' }]);
+        await supabaseClient.from('orders').insert([{ customer_name: nombre, customer_phone: telefono, total, items: JSON.stringify(cart), status: 'pending' }]);
         let msg = ` *NUEVA INSCRIPCIÓN - NEXO Shop*\n\n👤 Estudiante: ${nombre}\n📱 Tel: ${telefono}\n📧 Email: ${email || 'No proporcionado'}\n\n📦 *Cursos Inscritos:*\n`;
         cart.forEach(i => msg += `• ${i.title}\n`);
         msg += `\n💰 *TOTAL: $${total.toLocaleString('es-CO')}*\n📍 Montería, Colombia\n\n¿Cómo puedo proceder al pago? (Nequi, Daviplata, Transferencia)`;
