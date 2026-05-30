@@ -81,6 +81,7 @@ Puedes copiar este código en el SQL Editor para agregar los cursos solicitados:
 ```sql
 INSERT INTO products (title, price, original_price, category, image, description)
 VALUES
+('Curso de Branding y Negocios', 65000, 110000, 'Cursos', 'https://i.postimg.cc/t4DPwXZP/file-00000000273071f998a590043cb5b39c.png', 'Aprende a construir tu marca personal y estrategias de branding que conectan con tus clientes. Lleva tu negocio de uñas al siguiente nivel con técnicas profesionales de marketing y posicionamiento.'),
 ('Curso de Marketing Digital desde Cero', 85000, 150000, 'Cursos', 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?w=400', 'Aprende a crear campañas en redes sociales, SEO y email marketing. Ideal para emprendedores.'),
 ('Excel Avanzado para Contadores', 60000, 100000, 'Cursos', 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400', 'Domina tablas dinámicas, macros y fórmulas complejas. Certificado incluido.'),
 ('Curso de Repostería Artesanal', 45000, 80000, 'Cursos', 'https://images.unsplash.com/photo-1556910103-1c02745a30bf?w=400', 'Aprende a hacer postres deliciosos y vende tus propios productos desde casa.');
