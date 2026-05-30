@@ -14,22 +14,26 @@
 
     /* HEADER */
     header { background: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
+    .logo-container { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .logo-img { height: 32px; width: auto; }
     .logo-text { font-size: 24px; font-weight: 900; background: linear-gradient(135deg, #EC4899, #A855F7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .cart-btn { background: #FFF0F6; border: none; padding: 8px 12px; border-radius: 12px; font-size: 20px; position: relative; cursor: pointer; }
     .badge { position: absolute; top: -5px; right: -5px; background: #EC4899; color: white; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
     
     /* CONTENIDO */
     main { flex: 1; padding: 0 16px; }
-    .category-filter { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; margin-bottom: 16px; -webkit-overflow-scrolling: touch; }
-    .category-btn { background: white; border: 2px solid #FBCFE8; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
+    .category-filter { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; margin-bottom: 16px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .category-filter::-webkit-scrollbar { display: none; }
+    .category-btn { background: white; border: 2px solid #FBCFE8; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; transition: 0.2s; }
     .category-btn.active { background: #EC4899; color: white; border-color: #EC4899; }
 
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(236, 72, 153, 0.1); border: 2px solid #FBCFE8; cursor: pointer; transition: transform 0.2s; }
+    .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(236, 72, 153, 0.1); border: 2px solid #FBCFE8; cursor: pointer; transition: transform 0.2s; display: flex; flex-direction: column; }
     .card:active { transform: scale(0.98); }
     .card img { width: 100%; height: 140px; object-fit: cover; }
-    .info { padding: 10px; }
-    .title { font-size: 13px; font-weight: 700; margin: 0 0 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .info { padding: 10px; flex: 1; display: flex; flex-direction: column; }
+    .title { font-size: 13px; font-weight: 700; margin: 0 0 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 40px; }
+    .price-container { margin-top: auto; }
     .price { font-size: 16px; font-weight: 900; color: #DB2777; }
     .original { font-size: 11px; color: #6B7280; text-decoration: line-through; margin-left: 5px; }
     .btn-add { background: linear-gradient(135deg, #EC4899, #A855F7); color: white; border: none; padding: 10px; border-radius: 10px; width: 100%; margin-top: 8px; font-weight: 700; cursor: pointer; }
@@ -37,19 +41,23 @@
     /* MODAL */
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: flex-end; }
     .modal.active { display: flex; }
-    .modal-content { background: white; width: 100%; border-radius: 24px 24px 0 0; padding: 24px 16px; max-height: 85vh; overflow-y: auto; animation: slideUp 0.3s; }
+    .modal-content { background: white; width: 100%; border-radius: 24px 24px 0 0; padding: 24px 16px; max-height: 85vh; overflow-y: auto; animation: slideUp 0.3s; position: relative; }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .modal-close { position: absolute; top: 16px; right: 16px; background: white; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .modal-close { position: absolute; top: 16px; right: 16px; background: white; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 10; }
     .modal-img { width: 100%; height: 250px; object-fit: cover; border-radius: 16px; margin-bottom: 16px; }
-    .modal-title { font-size: 22px; font-weight: 800; margin: 0 0 12px; }
+    .modal-title { font-size: 22px; font-weight: 800; margin: 0 0 12px; padding-right: 40px; }
     .modal-price { font-size: 24px; font-weight: 900; color: #DB2777; margin-bottom: 16px; }
-    .modal-desc { color: #6B7280; line-height: 1.6; margin-bottom: 20px; padding: 16px; background: #FFF0F6; border-radius: 12px; }
-    .modal-features { margin: 16px 0; padding-left: 20px; }
-    .modal-features li { margin: 8px 0; color: #374151; }
+    .modal-desc { color: #4B5563; line-height: 1.6; margin-bottom: 20px; padding: 16px; background: #FFF0F6; border-radius: 12px; font-size: 14px; }
+    .modal-features { margin: 16px 0; padding-left: 20px; list-style-type: none; }
+    .modal-features li { margin: 8px 0; color: #374151; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .modal-features li::before { content: '✓'; color: #EC4899; font-weight: bold; }
+
+    /* VIEWS */
+    .view { display: none; padding: 16px; animation: fadeIn 0.3s; }
+    .view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     /* CARRITO */
-    .cart-view { display: none; padding: 16px; }
-    .cart-view.active { display: block; }
     .cart-item { background: white; padding: 12px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(236,72,153,0.1); display: flex; gap: 12px; align-items: center; }
     .cart-item img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; }
     .cart-item-info { flex: 1; }
@@ -58,39 +66,53 @@
     .qty-control { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
     .qty-btn { width: 28px; height: 28px; background: #FFF0F6; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; color: #EC4899; }
     .qty-val { font-weight: 700; min-width: 24px; text-align: center; }
-    .cart-total { background: white; padding: 20px; border-radius: 12px; margin-top: 20px; text-align: center; }
+    .cart-total { background: white; padding: 20px; border-radius: 12px; margin-top: 20px; text-align: center; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); }
     .cart-total h3 { margin: 0 0 10px; font-size: 20px; }
     .total-price { font-size: 28px; font-weight: 900; color: #DB2777; margin: 10px 0; }
     .btn-checkout { background: linear-gradient(135deg, #EC4899, #A855F7); color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; width: 100%; margin-top: 12px; }
-    .btn-back { background: #f3f4f5; color: #111827; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; margin-bottom: 16px; }
+    .btn-back { background: white; color: #111827; border: 2px solid #FBCFE8; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 8px; }
     .empty-cart { text-align: center; padding: 60px 20px; color: #6B7280; }
 
-    /* FOOTER */
-    footer { background: white; padding: 20px; text-align: center; margin-top: auto; border-top: 1px solid #eee; }
-    .footer-title { font-size: 18px; font-weight: 900; background: linear-gradient(135deg, #EC4899, #A855F7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
-    .footer-text { font-size: 12px; color: #6B7280; margin: 4px 0; }
-    .footer-links a { color: #EC4899; text-decoration: none; font-weight: 600; font-size: 12px; margin: 0 5px; }
+    /* LEGAL VIEWS */
+    .legal-content { background: white; padding: 24px; border-radius: 16px; line-height: 1.8; color: #374151; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .legal-content h2 { color: #EC4899; margin-top: 0; }
+    .legal-content h3 { margin-top: 24px; color: #111827; }
 
-    .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; z-index: 60; }
-    .nav-item { font-size: 12px; font-weight: 700; color: #6B7280; text-decoration: none; cursor: pointer; }
-    .nav-item.active { color: #EC4899; }
+    /* FOOTER */
+    footer { background: white; padding: 30px 20px 120px; text-align: center; margin-top: auto; border-top: 1px solid #eee; }
+    .footer-title { font-size: 20px; font-weight: 900; background: linear-gradient(135deg, #EC4899, #A855F7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }
+    .footer-text { font-size: 12px; color: #6B7280; margin: 6px 0; }
+    .footer-links { margin-top: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .footer-links a { color: #EC4899; text-decoration: none; font-weight: 600; font-size: 12px; padding: 4px 8px; }
+
+    /* BOTTOM NAV */
+    .nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; z-index: 60; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+    .nav-item { font-size: 11px; font-weight: 700; color: #6B7280; text-decoration: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.2s; }
+    .nav-item i { font-size: 20px; font-style: normal; }
+    .nav-item.active { color: #EC4899; transform: translateY(-2px); }
+
     .hidden { display: none !important; }
     .loading { text-align: center; padding: 40px; color: #6B7280; grid-column: 1 / -1; }
   </style>
 </head>
 <body>
   <header>
-    <div class="logo-text">NEXO Shop</div>
-    <button class="cart-btn" onclick="showCart()">🛒<span class="badge" id="badge">0</span></button>
+    <div class="logo-container" onclick="showHome()" id="navHomeLogo">
+      <img src="logo.png" alt="NEXO" class="logo-img" onerror="this.style.display='none'">
+      <div class="logo-text">NEXO Shop</div>
+    </div>
+    <button class="cart-btn" onclick="showCart()" id="navCartBtn">🛒<span class="badge" id="badge">0</span></button>
   </header>
 
-  <main id="productView">
+  <!-- HOME VIEW -->
+  <main id="productView" class="view active">
     <h2 style="margin: 16px 0 8px; font-size: 18px;">Categorías</h2>
     <div class="category-filter" id="categoryFilter">
       <button class="category-btn active" onclick="filterCategory('all')">Todas</button>
       <button class="category-btn" onclick="filterCategory('Ropa')">Ropa</button>
       <button class="category-btn" onclick="filterCategory('Calzado')">Calzado</button>
       <button class="category-btn" onclick="filterCategory('Accesorios')">Accesorios</button>
+      <button class="category-btn" onclick="filterCategory('Cursos')">Cursos</button>
     </div>
 
     <div class="grid" id="productGrid">
@@ -98,6 +120,53 @@
     </div>
   </main>
 
+  <!-- CART VIEW -->
+  <div class="view" id="cartView">
+    <button class="btn-back" onclick="showHome()">← Volver a la tienda</button>
+    <h2 style="margin-top:0">🛒 Tu Carrito</h2>
+    <div id="cartItems"></div>
+    <div class="cart-total" id="cartTotal" style="display:none">
+      <h3>Resumen del Pedido</h3>
+      <div class="total-price" id="totalPrice">$0</div>
+      <button class="btn-checkout" onclick="checkout()" id="btnFinalizar">Finalizar Compra</button>
+    </div>
+  </div>
+
+  <!-- TERMS VIEW -->
+  <div class="view" id="termsView">
+    <button class="btn-back" onclick="showHome()">← Volver</button>
+    <div class="legal-content">
+      <h2>Términos y Condiciones</h2>
+      <p>Bienvenido a NEXO Shop. Al acceder y utilizar este sitio web, usted acepta cumplir con los siguientes términos:</p>
+      <h3>1. Uso del Sitio</h3>
+      <p>Este sitio es para uso personal y comercial de los productos ofrecidos. Queda prohibida la reproducción total o parcial del contenido sin autorización.</p>
+      <h3>2. Pedidos y Pagos</h3>
+      <p>Los pedidos se procesan a través de WhatsApp. El pago se coordina directamente con el vendedor mediante métodos seguros como Nequi, Daviplata o transferencia bancaria.</p>
+      <h3>3. Envíos</h3>
+      <p>Realizamos envíos a toda Colombia. Los tiempos de entrega varían según la ubicación (estimado 2-5 días hábiles).</p>
+      <h3>4. Garantías</h3>
+      <p>Todos nuestros productos cuentan con una garantía de 30 días por defectos de fábrica.</p>
+    </div>
+  </div>
+
+  <!-- PRIVACY VIEW -->
+  <div class="view" id="privacyView">
+    <button class="btn-back" onclick="showHome()">← Volver</button>
+    <div class="legal-content">
+      <h2>Política de Privacidad</h2>
+      <p>En NEXO Shop, protegemos tu privacidad y tus datos personales.</p>
+      <h3>Tratamiento de Datos</h3>
+      <p>Los datos solicitados al momento de la compra (nombre, teléfono) se utilizan exclusivamente para:</p>
+      <ul>
+        <li>Procesar y enviar tu pedido.</li>
+        <li>Contactarte vía WhatsApp para coordinar la entrega.</li>
+        <li>Brindar soporte post-venta.</li>
+      </ul>
+      <p>No compartimos tu información con terceros con fines publicitarios.</p>
+    </div>
+  </div>
+
+  <!-- PRODUCT MODAL -->
   <div class="modal" id="productModal">
     <button class="modal-close" onclick="closeModal()">×</button>
     <div class="modal-content">
@@ -106,23 +175,12 @@
       <div class="modal-price" id="modalPrice"></div>
       <div class="modal-desc" id="modalDesc"></div>
       <ul class="modal-features">
-        <li>✓ Producto 100% original</li>
-        <li>✓ Envío a todo Colombia</li>
-        <li>✓ Garantía de 30 días</li>
-        <li>✓ Pago seguro</li>
+        <li>Producto 100% original</li>
+        <li>Envío a todo Colombia</li>
+        <li>Garantía de calidad</li>
+        <li>Pago seguro y confiable</li>
       </ul>
       <button class="btn-add" id="modalAddBtn" style="padding: 14px; font-size: 16px;">Agregar al Carrito</button>
-    </div>
-  </div>
-
-  <div class="cart-view" id="cartView">
-    <button class="btn-back" onclick="showHome()">← Volver a la tienda</button>
-    <h2 style="margin-top:0">🛒 Tu Carrito</h2>
-    <div id="cartItems"></div>
-    <div class="cart-total" id="cartTotal" style="display:none">
-      <h3>Total</h3>
-      <div class="total-price" id="totalPrice">$0</div>
-      <button class="btn-checkout" onclick="checkout()">Finalizar Compra</button>
     </div>
   </div>
 
@@ -132,14 +190,16 @@
     <p class="footer-text">📍 Montería, Córdoba, Colombia</p>
     <p class="footer-text">📱 WhatsApp: +57 301 844 2704</p>
     <div class="footer-links">
-      <a href="#">Términos y Condiciones</a> • <a href="#">Política de Privacidad</a> • <a href="https://wa.me/573018442704" target="_blank">Soporte</a>
+      <a href="javascript:void(0)" onclick="showTerms()">Términos y Condiciones</a>
+      <a href="javascript:void(0)" onclick="showPrivacy()">Política de Privacidad</a>
+      <a href="https://wa.me/573018442704" target="_blank">Soporte</a>
     </div>
   </footer>
 
   <nav class="nav">
-    <a class="nav-item active" onclick="showHome()">🏠 Inicio</a>
-    <a class="nav-item" onclick="showCategories()">🧭 Categorías</a>
-    <a class="nav-item" onclick="showCart()">🛒 Carrito</a>
+    <a class="nav-item active" onclick="showHome()" id="navHome"><i>🏠</i><span>Inicio</span></a>
+    <a class="nav-item" onclick="showCategories()" id="navCategories"><i>🧭</i><span>Categorías</span></a>
+    <a class="nav-item" onclick="showCart()" id="navCart"><i>🛒</i><span>Carrito</span></a>
   </nav>
 
   <script>
@@ -150,34 +210,49 @@
     let cart = JSON.parse(localStorage.getItem('nexo_cart')) || [];
     let products = [];
     let currentCategory = 'all';
-    let currentProduct = null;
+
+    function hideAllViews() {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(v => v.classList.remove('active'));
+    }
 
     function showHome() {
-      document.getElementById('productView').classList.remove('hidden');
-      document.getElementById('cartView').classList.remove('active');
-      document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === 0));
+      hideAllViews();
+      document.getElementById('productView').classList.add('active');
+      document.getElementById('navHome').classList.add('active');
       window.scrollTo(0, 0);
     }
 
     function showCategories() {
       showHome();
       document.getElementById('categoryFilter').scrollIntoView({ behavior: 'smooth' });
-      document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === 1));
+      document.getElementById('navCategories').classList.add('active');
     }
 
     function showCart() {
-      document.getElementById('productView').classList.add('hidden');
+      hideAllViews();
       document.getElementById('cartView').classList.add('active');
-      document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === 2));
+      document.getElementById('navCart').classList.add('active');
       renderCart();
+      window.scrollTo(0, 0);
+    }
+
+    function showTerms() {
+      hideAllViews();
+      document.getElementById('termsView').classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function showPrivacy() {
+      hideAllViews();
+      document.getElementById('privacyView').classList.add('active');
       window.scrollTo(0, 0);
     }
 
     function filterCategory(cat) {
       currentCategory = cat;
       document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if ((cat === 'all' && btn.textContent === 'Todas') || btn.textContent === cat) btn.classList.add('active');
+        btn.classList.toggle('active', (cat === 'all' && btn.textContent === 'Todas') || btn.textContent === cat);
       });
       renderProducts();
     }
@@ -190,13 +265,19 @@
         products = data || [];
         renderProducts();
       } catch (e) {
-        grid.innerHTML = '<div class="loading"><h3>⛔ Error</h3><p>' + e.message + '</p></div>';
+        grid.innerHTML = `<div class="loading"><h3>⛔ Error</h3><p>${e.message}</p></div>`;
       }
     }
 
     function renderProducts() {
       const grid = document.getElementById('productGrid');
       const filtered = currentCategory === 'all' ? products : products.filter(p => p.category === currentCategory);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="loading">Próximamente más productos en esta categoría...</div>';
+        return;
+      }
+
       grid.innerHTML = '';
       filtered.forEach(p => {
         const disc = p.original_price ? Math.round(((p.original_price - p.price)/p.original_price)*100) : 0;
@@ -205,7 +286,10 @@
             <img src="${p.image || 'https://via.placeholder.com/150'}" alt="${p.title}">
             <div class="info">
               <p class="title">${p.title}</p>
-              <div><span class="price">$${(p.price||0).toLocaleString('es-CO')}</span> ${p.original_price ? `<span class="original">$${p.original_price.toLocaleString('es-CO')}</span>` : ''}</div>
+              <div class="price-container">
+                <span class="price">$${(p.price||0).toLocaleString('es-CO')}</span>
+                ${p.original_price ? `<span class="original">$${p.original_price.toLocaleString('es-CO')}</span>` : ''}
+              </div>
               ${disc > 0 ? `<div style="color:#10B981;font-size:11px;font-weight:bold;margin:4px 0">-${disc}% OFF</div>` : ''}
               <button class="btn-add" onclick="event.stopPropagation(); addToCart(${p.id})">Agregar</button>
             </div>
@@ -216,17 +300,17 @@
     function openProductModal(id) {
       const p = products.find(x => x.id === id);
       if (!p) return;
-      currentProduct = p;
       document.getElementById('modalImg').src = p.image;
       document.getElementById('modalTitle').textContent = p.title;
       document.getElementById('modalPrice').textContent = `$${(p.price||0).toLocaleString('es-CO')}`;
+
       const disc = p.original_price ? Math.round(((p.original_price - p.price)/p.original_price)*100) : 0;
       document.getElementById('modalDesc').innerHTML = `
         <strong>${p.title}</strong><br><br>
-        ${p.description || 'Producto de alta calidad disponible en NEXO Shop. Envíos a toda Colombia.'}<br><br>
-        ${disc > 0 ? `<strong style="color:#10B981">¡Ahorra ${disc}%!</strong><br>` : ''}
-        Precio original: ${p.original_price ? `$${p.original_price.toLocaleString('es-CO')}` : 'N/A'}
+        ${p.description || 'Producto de alta calidad seleccionado por NEXO Shop para ti. Garantizamos la mejor relación calidad-precio.'}<br><br>
+        ${disc > 0 ? `<strong style="color:#10B981">¡Ahorra ${disc}% en tu compra!</strong>` : ''}
       `;
+
       document.getElementById('modalAddBtn').onclick = () => { addToCart(p.id); closeModal(); };
       document.getElementById('productModal').classList.add('active');
     }
@@ -240,14 +324,25 @@
       if (existing) existing.qty++;
       else cart.push({ id: p.id, title: p.title, price: p.price, image: p.image, qty: 1 });
       saveCart(); updateBadge();
-      alert('✅ Agregado al carrito');
+
+      // Feedback visual en lugar de alert molesto
+      const btn = event?.target;
+      if (btn && btn.classList.contains('btn-add')) {
+        const originalText = btn.textContent;
+        btn.textContent = '✅ ¡Añadido!';
+        btn.style.background = '#10B981';
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.background = '';
+        }, 1500);
+      }
     }
 
     function renderCart() {
       const container = document.getElementById('cartItems');
       const totalDiv = document.getElementById('cartTotal');
       if (!cart.length) {
-        container.innerHTML = '<div class="empty-cart"><div style="font-size:48px">🛒</div><h3>Tu carrito está vacío</h3><p>Agrega productos para comenzar</p></div>';
+        container.innerHTML = '<div class="empty-cart"><div style="font-size:48px">🛒</div><h3>Tu carrito está vacío</h3><p>Explora nuestra tienda y encuentra lo que buscas.</p><button class="btn-checkout" onclick="showHome()" style="width:auto; padding: 10px 20px;">Ver Productos</button></div>';
         totalDiv.style.display = 'none'; return;
       }
       container.innerHTML = '';
@@ -284,25 +379,46 @@
     function updateBadge() { document.getElementById('badge').textContent = cart.reduce((s, i) => s + i.qty, 0); }
 
     async function checkout() {
-      if (!cart.length) return alert('El carrito está vacío');
-      const nombre = prompt('👤 Ingresa tu nombre completo:');
+      if (!cart.length) return;
+      const nombre = prompt('👤 Ingresa tu nombre completo para el envío:');
       if (!nombre) return;
       const telefono = prompt('📱 Ingresa tu número de WhatsApp:');
       if (!telefono) return;
       const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
 
       try {
-        await supabaseClient.from('orders').insert([{ customer_name: nombre, customer_phone: telefono, total, items: JSON.stringify(cart), status: 'pending' }]);
-        let msg = `🛒 *NUEVO PEDIDO - NEXO Shop*\n\n👤 Cliente: ${nombre}\n📱 Tel: ${telefono}\n\n📦 *Productos:*\n`;
-        cart.forEach(i => msg += `• ${i.title} x${i.qty} = $${(i.price*i.qty).toLocaleString('es-CO')}\n`);
-        msg += `\n💰 *TOTAL: $${total.toLocaleString('es-CO')}*\n📍 Montería, Colombia\n\n¿Cómo puedo proceder al pago? (Nequi, Daviplata, Transferencia o Efectivo)`;
+        const { error } = await supabaseClient.from('orders').insert([{
+          customer_name: nombre,
+          customer_phone: telefono,
+          total,
+          items: JSON.stringify(cart),
+          status: 'pending'
+        }]);
+
+        if (error) throw error;
+
+        let msg = `🛒 *NUEVO PEDIDO - NEXO Shop*\n\n👤 *Cliente:* ${nombre}\n📱 *Tel:* ${telefono}\n\n📦 *Detalle del Pedido:*\n`;
+        cart.forEach(i => msg += `• ${i.title} (x${i.qty}) - $${(i.price*i.qty).toLocaleString('es-CO')}\n`);
+        msg += `\n💰 *TOTAL A PAGAR: $${total.toLocaleString('es-CO')}*\n\nHola, acabo de realizar un pedido. ¿Me pueden indicar los medios de pago disponibles?`;
+
         window.open(`https://wa.me/573018442704?text=${encodeURIComponent(msg)}`, '_blank');
         cart = []; saveCart(); updateBadge(); showHome();
-        alert('✅ Pedido enviado. Te contactaremos por WhatsApp.');
-      } catch (e) { alert('⛔ Error: ' + e.message); }
+        alert('✅ ¡Pedido registrado con éxito! Te hemos redirigido a WhatsApp para coordinar el pago y envío.');
+      } catch (e) {
+        console.error(e);
+        alert('⛔ Hubo un problema al registrar tu pedido: ' + e.message + '\nIntentaremos abrir WhatsApp de todos modos.');
+        // Fallback to WhatsApp even if DB insert fails
+        let msg = `🛒 *PEDIDO MANUAL - NEXO Shop*\n\n👤 *Cliente:* ${nombre}\n📦 *Total:* $${total.toLocaleString('es-CO')}`;
+        window.open(`https://wa.me/573018442704?text=${encodeURIComponent(msg)}`, '_blank');
+      }
     }
 
-    loadProducts(); updateBadge();
+    // Inicialización
+    loadProducts();
+    updateBadge();
+
+    // Cerrar modal al hacer clic fuera
+    window.onclick = (e) => { if (e.target == document.getElementById('productModal')) closeModal(); }
   </script>
 </body>
 </html>
