@@ -73,21 +73,18 @@ Ejecuta este SQL en el panel de Supabase:
 -- Añadir nuevas columnas necesarias
 ALTER TABLE products ADD COLUMN IF NOT EXISTS category text DEFAULT 'Ropa';
 ALTER TABLE products ADD COLUMN IF NOT EXISTS description text;
-
--- Ejemplo para actualizar productos existentes
-UPDATE products SET category = 'Calzado' WHERE title ILIKE '%tenis%' OR title ILIKE '%zapatos%';
-UPDATE products SET category = 'Accesorios' WHERE title ILIKE '%bolso%' OR title ILIKE '%reloj%';
 ```
 
-**Estructura Completa Sugerida:**
-*   `id`: int8 (Primary Key)
-*   `title`: text
-*   `price`: numeric
-*   `original_price`: numeric (opcional)
-*   `image`: text (URL de la imagen)
-*   `category`: text (Ropa, Calzado, Accesorios)
-*   `description`: text (Descripción larga del producto)
-*   `created_at`: timestamptz
+### ⚡ Insertar Categoría "Cursos" (Ejemplos)
+Puedes copiar este código en el SQL Editor para agregar los cursos solicitados:
+
+```sql
+INSERT INTO products (title, price, original_price, category, image, description)
+VALUES
+('Curso de Marketing Digital desde Cero', 85000, 150000, 'Cursos', 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?w=400', 'Aprende a crear campañas en redes sociales, SEO y email marketing. Ideal para emprendedores.'),
+('Excel Avanzado para Contadores', 60000, 100000, 'Cursos', 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400', 'Domina tablas dinámicas, macros y fórmulas complejas. Certificado incluido.'),
+('Curso de Repostería Artesanal', 45000, 80000, 'Cursos', 'https://images.unsplash.com/photo-1556910103-1c02745a30bf?w=400', 'Aprende a hacer postres deliciosos y vende tus propios productos desde casa.');
+```
 
 ---
 
