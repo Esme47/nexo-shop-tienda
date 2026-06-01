@@ -705,8 +705,15 @@
     async function loadOrders() {
       const container = document.getElementById('ordersList');
       try {
+        console.log('Cargando pedidos desde Supabase...');
         const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
-        if (error) throw error;
+
+        if (error) {
+          console.error('Error de Supabase al cargar pedidos:', error);
+          throw error;
+        }
+
+        console.log('Pedidos recibidos:', data);
 
         if (!data || data.length === 0) {
           container.innerHTML = '<div class="loading">No hay pedidos registrados</div>';
@@ -720,7 +727,11 @@
           if (order.status === 'pending') pending++;
           if (order.status === 'completed') completed++;
 
-          const items = JSON.parse(order.items || '[]');
+          let items = [];
+          try {
+            items = typeof order.items === 'string' ? JSON.parse(order.items) : (order.items || []);
+          } catch(e) { console.error('Error parsing items for order', order.id, e); }
+
           const date = new Date(order.created_at).toLocaleString('es-CO');
 
           container.innerHTML += `
