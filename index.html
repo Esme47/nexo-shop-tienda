@@ -44,6 +44,17 @@
     .modal-features { margin: 16px 0; padding-left: 20px; }
     .modal-features li { margin: 8px 0; color: #374151; }
 
+    /* CHECKOUT MODAL */
+    .checkout-modal .modal-content { max-height: 90vh; }
+    .checkout-form { display: flex; flex-direction: column; gap: 16px; margin: 20px 0; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-weight: 600; color: #374151; font-size: 14px; }
+    .form-group input { padding: 12px 16px; border: 2px solid #E5E7EB; border-radius: 12px; font-size: 15px; font-family: 'Poppins', sans-serif; transition: border-color 0.2s; }
+    .form-group input:focus { outline: none; border-color: #EC4899; }
+    .form-group input.error { border-color: #EF4444; }
+    .error-message { color: #EF4444; font-size: 12px; margin-top: 4px; display: none; }
+    .error-message.show { display: block; }
+
     .cart-view { display: none; padding: 16px; }
     .cart-view.active { display: block; }
     .cart-item { background: white; padding: 12px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(236,72,153,0.1); display: flex; gap: 12px; align-items: center; }
@@ -70,6 +81,26 @@
     .terms-section ul { padding-left: 20px; }
     .terms-section li { margin-bottom: 6px; }
 
+    /* ADMIN PANEL */
+    .admin-view { display: none; padding: 16px; }
+    .admin-view.active { display: block; }
+    .admin-login { max-width: 400px; margin: 40px auto; background: white; padding: 32px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .admin-login h2 { margin-top: 0; color: #EC4899; }
+    .admin-content { background: white; padding: 24px; border-radius: 16px; margin: 16px 0; }
+    .order-card { background: #FFF0F6; padding: 16px; border-radius: 12px; margin-bottom: 16px; border-left: 4px solid #EC4899; }
+    .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .order-id { font-weight: 700; color: #111827; }
+    .order-status { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+    .order-status.pending { background: #FBBF24; color: #78350F; }
+    .order-status.paid { background: #34D399; color: #065F46; }
+    .order-status.shipped { background: #60A5FA; color: #1E3A8A; }
+    .order-status.completed { background: #A78BFA; color: #5B21B6; }
+    .order-info { font-size: 14px; color: #374151; margin: 8px 0; }
+    .order-items { background: white; padding: 12px; border-radius: 8px; margin: 12px 0; }
+    .order-items h4 { margin: 0 0 8px; color: #111827; }
+    .order-items ul { margin: 0; padding-left: 20px; }
+    .status-select { padding: 8px 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-family: 'Poppins', sans-serif; cursor: pointer; }
+
     footer { background: white; padding: 20px; text-align: center; margin-top: auto; border-top: 1px solid #eee; }
     .footer-title { font-size: 18px; font-weight: 900; background: linear-gradient(135deg, #EC4899, #A855F7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
     .footer-text { font-size: 12px; color: #6B7280; margin: 4px 0; }
@@ -78,6 +109,13 @@
     .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; z-index: 60; }
     .nav-item { font-size: 12px; font-weight: 700; color: #6B7280; text-decoration: none; cursor: pointer; }
     .nav-item.active { color: #EC4899; }
+
+    /* FLOATING WHATSAPP BUTTON */
+    .whatsapp-float { position: fixed; bottom: 80px; right: 20px; width: 60px; height: 60px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4); cursor: pointer; z-index: 70; transition: transform 0.2s; animation: pulse 2s infinite; }
+    .whatsapp-float:hover { transform: scale(1.1); }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    .whatsapp-float svg { width: 32px; height: 32px; fill: white; }
+
     .hidden { display: none !important; }
     .loading { text-align: center; padding: 40px; color: #6B7280; grid-column: 1 / -1; }
   </style>
@@ -88,23 +126,89 @@
     <button class="cart-btn" onclick="showCart()">🛒<span class="badge" id="badge">0</span></button>
   </header>
 
+  <!-- BOTÓN FLOTANTE WHATSAPP -->
+  <div class="whatsapp-float" onclick="openWhatsApp()" title="Contáctanos por WhatsApp">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+  </div>
+
   <main id="productView">
     <h2 style="margin: 16px 0 8px; font-size: 18px;">Categorías de Cursos</h2>
     <div class="category-filter" id="categoryFilter">
-      <button class="category-btn active" onclick="filterCategory(this, 'all')">Todos</button>
-      <button class="category-btn" onclick="filterCategory(this, 'Manicurista')">Manicurista</button>
-      <button class="category-btn" onclick="filterCategory(this, 'Cejas y Pestañas')">Cejas y Pestañas</button>
-      <button class="category-btn" onclick="filterCategory(this, 'Emprendimiento')">Emprendimiento</button>
-      <button class="category-btn" onclick="filterCategory(this, 'Decoradora de Fiestas')">Decoradora de Fiestas</button>
-      <button class="category-btn" onclick="filterCategory(this, 'Repostería')">Repostería</button>
-      <button class="category-btn" onclick="filterCategory(this, 'Confección Textil')">Confección Textil</button>
-      <button class="category-btn" onclick="filterCategory(this, 'Cursos')">Otros Cursos</button>
+      <button class="category-btn active" onclick="filterCategory('all')">Todos</button>
+      <button class="category-btn" onclick="filterCategory('Manicurista')">Manicurista</button>
+      <button class="category-btn" onclick="filterCategory('Cejas y Pestañas')">Cejas y Pestañas</button>
+      <button class="category-btn" onclick="filterCategory('Emprendimiento')">Emprendimiento</button>
+      <button class="category-btn" onclick="filterCategory('Decoradora de Fiestas')">Decoradora de Fiestas</button>
+      <button class="category-btn" onclick="filterCategory('Repostería')">Repostería</button>
+      <button class="category-btn" onclick="filterCategory('Confección Textil')">Confección Textil</button>
+      <button class="category-btn" onclick="filterCategory('Cursos')">Otros Cursos</button>
     </div>
 
     <div class="grid" id="productGrid">
       <div class="loading">🔄 Cargando cursos...</div>
     </div>
   </main>
+
+  <!-- CHECKOUT MODAL -->
+  <div class="modal checkout-modal" id="checkoutModal">
+    <button class="modal-close" onclick="closeCheckout()">×</button>
+    <div class="modal-content">
+      <h2 style="margin-top:0; color:#EC4899; font-size:24px;">📝 Finalizar Inscripción</h2>
+      <p style="color:#6B7280; margin-bottom:20px;">Completa tus datos para recibir acceso a tus cursos</p>
+
+      <div class="checkout-form">
+        <div class="form-group">
+          <label for="checkoutName">👤 Nombre completo *</label>
+          <input type="text" id="checkoutName" placeholder="Ej: María Fernanda López">
+          <div class="error-message" id="nameError">Por favor ingresa tu nombre completo</div>
+        </div>
+
+        <div class="form-group">
+          <label for="checkoutPhone">📱 WhatsApp / Teléfono *</label>
+          <input type="tel" id="checkoutPhone" placeholder="Ej: 301 844 2704">
+          <div class="error-message" id="phoneError">Por favor ingresa tu número de teléfono</div>
+        </div>
+
+        <div class="form-group">
+          <label for="checkoutEmail">📧 Correo electrónico *</label>
+          <input type="email" id="checkoutEmail" placeholder="Ej: maria@email.com">
+          <div class="error-message" id="emailError">Por favor ingresa un correo válido</div>
+        </div>
+
+        <div class="form-group">
+          <label for="checkoutCity">📍 Ciudad</label>
+          <input type="text" id="checkoutCity" placeholder="Ej: Montería, Córdoba">
+        </div>
+      </div>
+
+      <div style="background:#FFF0F6; padding:16px; border-radius:12px; margin:20px 0;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#6B7280;">Total a pagar:</span>
+          <span style="font-size:20px; font-weight:900; color:#DB2777;" id="checkoutTotal">$0</span>
+        </div>
+        <p style="font-size:12px; color:#6B7280; margin:0;">💳 Te contactaremos por WhatsApp para coordinar el pago</p>
+      </div>
+
+      <button class="btn-checkout" onclick="processCheckout()" style="padding:16px; font-size:18px;">✅ Confirmar Inscripción</button>
+
+      <p style="text-align:center; font-size:12px; color:#9CA3AF; margin-top:16px;">
+        🔒 Tus datos están protegidos y nunca serán compartidos
+      </p>
+    </div>
+  </div>
+
+  <!-- ADMIN LOGIN MODAL -->
+  <div class="modal" id="adminLoginModal">
+    <div class="modal-content" style="max-width:400px; margin:40px auto;">
+      <button class="modal-close" onclick="closeAdminLogin()">×</button>
+      <h2 style="color:#EC4899; margin-top:0;">🔐 Acceso Admin</h2>
+      <div class="form-group" style="margin:20px 0;">
+        <label>Contraseña</label>
+        <input type="password" id="adminPassword" placeholder="Ingresa la contraseña">
+      </div>
+      <button class="btn-checkout" onclick="verifyAdmin()">Ingresar</button>
+    </div>
+  </div>
 
   <div class="terms-view" id="termsView">
     <button class="btn-back" onclick="showHome()">← Volver a la tienda</button>
@@ -215,6 +319,38 @@
     </div>
   </div>
 
+  <!-- ADMIN PANEL -->
+  <div class="admin-view" id="adminView">
+    <div class="admin-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <h1 style="margin:0; color:#EC4899; font-size:24px;">📊 Panel de Administración</h1>
+        <button onclick="logoutAdmin()" style="background:#EF4444; color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:600;">Cerrar Sesión</button>
+      </div>
+
+      <div style="background:#FFF0F6; padding:16px; border-radius:12px; margin-bottom:24px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; text-align:center;">
+          <div>
+            <div style="font-size:28px; font-weight:900; color:#EC4899;" id="totalOrders">0</div>
+            <div style="font-size:12px; color:#6B7280;">Total Pedidos</div>
+          </div>
+          <div>
+            <div style="font-size:28px; font-weight:900; color:#FBBF24;" id="pendingOrders">0</div>
+            <div style="font-size:12px; color:#6B7280;">Pendientes</div>
+          </div>
+          <div>
+            <div style="font-size:28px; font-weight:900; color:#34D399;" id="completedOrders">0</div>
+            <div style="font-size:12px; color:#6B7280;">Completados</div>
+          </div>
+        </div>
+      </div>
+
+      <h2 style="margin-bottom:16px; color:#111827;">Pedidos Recientes</h2>
+      <div id="ordersList">
+        <div class="loading">Cargando pedidos...</div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal" id="productModal">
     <button class="modal-close" onclick="closeModal()">×</button>
     <div class="modal-content">
@@ -239,7 +375,7 @@
     <div class="cart-total" id="cartTotal" style="display:none">
       <h3>Total</h3>
       <div class="total-price" id="totalPrice">$0</div>
-      <button class="btn-checkout" onclick="checkout()">Finalizar Inscripción</button>
+      <button class="btn-checkout" onclick="openCheckout()">Finalizar Inscripción</button>
     </div>
   </div>
 
@@ -251,7 +387,8 @@
     <div class="footer-links">
       <a onclick="showTerms()">Términos y Condiciones</a> •
       <a onclick="showPrivacy()">Política de Privacidad</a> •
-      <a href="https://wa.me/573018442704" target="_blank">Soporte</a>
+      <a href="https://wa.me/573018442704" target="_blank">Soporte</a> •
+      <a onclick="showAdminLogin()">Admin</a>
     </div>
   </footer>
 
@@ -270,12 +407,15 @@
     let products = [];
     let currentCategory = 'all';
     let currentProduct = null;
+    let adminPassword = 'nexo2026admin'; // Cambia esta contraseña
 
+    // NAVEGACIÓN
     function showHome() {
       document.getElementById('productView').classList.remove('hidden');
       document.getElementById('cartView').classList.remove('active');
       document.getElementById('termsView').classList.remove('active');
       document.getElementById('privacyView').classList.remove('active');
+      document.getElementById('adminView').classList.remove('active');
       document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === 0));
       window.scrollTo(0, 0);
     }
@@ -291,6 +431,7 @@
       document.getElementById('cartView').classList.add('active');
       document.getElementById('termsView').classList.remove('active');
       document.getElementById('privacyView').classList.remove('active');
+      document.getElementById('adminView').classList.remove('active');
       document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === 2));
       renderCart();
       window.scrollTo(0, 0);
@@ -301,6 +442,7 @@
       document.getElementById('cartView').classList.remove('active');
       document.getElementById('termsView').classList.add('active');
       document.getElementById('privacyView').classList.remove('active');
+      document.getElementById('adminView').classList.remove('active');
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
       window.scrollTo(0, 0);
     }
@@ -310,17 +452,28 @@
       document.getElementById('cartView').classList.remove('active');
       document.getElementById('termsView').classList.remove('active');
       document.getElementById('privacyView').classList.add('active');
+      document.getElementById('adminView').classList.remove('active');
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
       window.scrollTo(0, 0);
     }
 
-    function filterCategory(btn, cat) {
+    // WHATSAPP FLOTANTE
+    function openWhatsApp() {
+      const message = '¡Hola! 👋 Estoy interesado en los cursos de NEXO Shop. ¿Me puedes brindar más información?';
+      window.open(`https://wa.me/573018442704?text=${encodeURIComponent(message)}`, '_blank');
+    }
+
+    // FILTRAR CATEGORÍAS
+    function filterCategory(cat) {
       currentCategory = cat;
-      document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if ((cat === 'all' && btn.textContent === 'Todos') || btn.textContent === cat) btn.classList.add('active');
+      });
       renderProducts();
     }
 
+    // CARGAR PRODUCTOS
     async function loadProducts() {
       const grid = document.getElementById('productGrid');
       try {
@@ -357,6 +510,7 @@
       }
     }
 
+    // MODAL PRODUCTO
     function openProductModal(id) {
       const p = products.find(x => x.id === id);
       if (!p) return;
@@ -377,6 +531,7 @@
 
     function closeModal() { document.getElementById('productModal').classList.remove('active'); }
 
+    // CARRITO
     function addToCart(id) {
       const p = products.find(x => x.id === id);
       if (!p) return;
@@ -427,27 +582,202 @@
     function saveCart() { localStorage.setItem('nexo_cart', JSON.stringify(cart)); }
     function updateBadge() { document.getElementById('badge').textContent = cart.reduce((s, i) => s + i.qty, 0); }
 
-    async function checkout() {
-      if (!cart.length) return alert('El carrito está vacío');
-      const nombre = prompt('👤 Ingresa tu nombre completo:');
-      if (!nombre) return;
-      const telefono = prompt('📱 Ingresa tu número de WhatsApp:');
-      if (!telefono) return;
-      const email = prompt('📧 Ingresa tu correo electrónico (para enviarte el certificado):');
+    // CHECKOUT MODAL ELEGANTE
+    function openCheckout() {
       const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-
-      try {
-        await supabaseClient.from('orders').insert([{ customer_name: nombre, customer_phone: telefono, total, items: JSON.stringify(cart), status: 'pending' }]);
-        let msg = ` *NUEVA INSCRIPCIÓN - NEXO Shop*\n\n👤 Estudiante: ${nombre}\n📱 Tel: ${telefono}\n📧 Email: ${email || 'No proporcionado'}\n\n📦 *Cursos Inscritos:*\n`;
-        cart.forEach(i => msg += `• ${i.title}\n`);
-        msg += `\n💰 *TOTAL: $${total.toLocaleString('es-CO')}*\n📍 Montería, Colombia\n\n¿Cómo puedo proceder al pago? (Nequi, Daviplata, Transferencia)`;
-        window.open(`https://wa.me/573018442704?text=${encodeURIComponent(msg)}`, '_blank');
-        cart = []; saveCart(); updateBadge(); showHome();
-        alert('✅ Inscripción enviada. Te contactaremos por WhatsApp en menos de 24 horas.');
-      } catch (e) { alert('⛔ Error: ' + e.message); }
+      document.getElementById('checkoutTotal').textContent = `$${total.toLocaleString('es-CO')}`;
+      document.getElementById('checkoutModal').classList.add('active');
+      // Limpiar formulario
+      document.getElementById('checkoutName').value = '';
+      document.getElementById('checkoutPhone').value = '';
+      document.getElementById('checkoutEmail').value = '';
+      document.getElementById('checkoutCity').value = '';
+      // Limpiar errores
+      document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+      document.querySelectorAll('input').forEach(el => el.classList.remove('error'));
     }
 
-    loadProducts(); updateBadge();
+    function closeCheckout() { document.getElementById('checkoutModal').classList.remove('active'); }
+
+    function processCheckout() {
+      const nombre = document.getElementById('checkoutName').value.trim();
+      const telefono = document.getElementById('checkoutPhone').value.trim();
+      const email = document.getElementById('checkoutEmail').value.trim();
+      const ciudad = document.getElementById('checkoutCity').value.trim();
+      const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+
+      // Validar campos
+      let hasError = false;
+      document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+      document.querySelectorAll('input').forEach(el => el.classList.remove('error'));
+
+      if (!nombre) {
+        document.getElementById('checkoutName').classList.add('error');
+        document.getElementById('nameError').classList.add('show');
+        hasError = true;
+      }
+      if (!telefono) {
+        document.getElementById('checkoutPhone').classList.add('error');
+        document.getElementById('phoneError').classList.add('show');
+        hasError = true;
+      }
+      if (!email || !email.includes('@')) {
+        document.getElementById('checkoutEmail').classList.add('error');
+        document.getElementById('emailError').classList.add('show');
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      // Guardar pedido en Supabase
+      supabaseClient.from('orders').insert([{
+        customer_name: nombre,
+        customer_phone: telefono,
+        customer_email: email,
+        customer_city: ciudad,
+        total: total,
+        items: JSON.stringify(cart),
+        status: 'pending'
+      }]).then(({ error }) => {
+        if (error) {
+          alert('⛔ Error al guardar: ' + error.message);
+          return;
+        }
+
+        // Enviar WhatsApp
+        let msg = `🛒 *NUEVA INSCRIPCIÓN - NEXO Shop*\n\n`;
+        msg += `👤 *Nombre:* ${nombre}\n`;
+        msg += `📱 *Teléfono:* ${telefono}\n`;
+        msg += `📧 *Email:* ${email}\n`;
+        if (ciudad) msg += `📍 *Ciudad:* ${ciudad}\n`;
+        msg += `\n📦 *Cursos Inscritos:*\n`;
+        cart.forEach(i => msg += `• ${i.title}\n`);
+        msg += `\n💰 *TOTAL: $${total.toLocaleString('es-CO')}*\n`;
+        msg += `📍 Montería, Colombia\n\n`;
+        msg += `¿Cómo puedo proceder al pago? (Nequi, Daviplata, Transferencia)`;
+
+        window.open(`https://wa.me/573018442704?text=${encodeURIComponent(msg)}`, '_blank');
+
+        // Limpiar carrito y cerrar
+        cart = [];
+        saveCart();
+        updateBadge();
+        closeCheckout();
+        showHome();
+        alert('✅ ¡Inscripción exitosa! Te contactaremos por WhatsApp en menos de 24 horas.');
+      });
+    }
+
+    // ADMIN PANEL
+    function showAdminLogin() {
+      document.getElementById('adminLoginModal').classList.add('active');
+    }
+
+    function closeAdminLogin() {
+      document.getElementById('adminLoginModal').classList.remove('active');
+    }
+
+    function verifyAdmin() {
+      const password = document.getElementById('adminPassword').value;
+      if (password === adminPassword) {
+        closeAdminLogin();
+        showAdminPanel();
+      } else {
+        alert('❌ Contraseña incorrecta');
+      }
+    }
+
+    function showAdminPanel() {
+      document.getElementById('productView').classList.add('hidden');
+      document.getElementById('cartView').classList.remove('active');
+      document.getElementById('termsView').classList.remove('active');
+      document.getElementById('privacyView').classList.remove('active');
+      document.getElementById('adminView').classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+      loadOrders();
+      window.scrollTo(0, 0);
+    }
+
+    function logoutAdmin() {
+      showHome();
+    }
+
+    async function loadOrders() {
+      const container = document.getElementById('ordersList');
+      try {
+        const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          container.innerHTML = '<div class="loading">No hay pedidos registrados</div>';
+          updateStats(0, 0, 0);
+          return;
+        }
+
+        let pending = 0, completed = 0;
+        container.innerHTML = '';
+        data.forEach(order => {
+          if (order.status === 'pending') pending++;
+          if (order.status === 'completed') completed++;
+
+          const items = JSON.parse(order.items || '[]');
+          const date = new Date(order.created_at).toLocaleString('es-CO');
+
+          container.innerHTML += `
+            <div class="order-card">
+              <div class="order-header">
+                <div>
+                  <div class="order-id">Pedido #${order.id}</div>
+                  <div style="font-size:12px; color:#6B7280;">${date}</div>
+                </div>
+                <select class="status-select ${order.status}" onchange="updateOrderStatus(${order.id}, this.value)">
+                  <option value="pending" ${order.status==='pending'?'selected':''}>⏳ Pendiente</option>
+                  <option value="paid" ${order.status==='paid'?'selected':''}>✅ Pagado</option>
+                  <option value="shipped" ${order.status==='shipped'?'selected':''}>📦 Enviado</option>
+                  <option value="completed" ${order.status==='completed'?'selected':''}>⭐ Completado</option>
+                </select>
+              </div>
+              <div class="order-info">👤 <strong>${order.customer_name}</strong></div>
+              <div class="order-info">📱 ${order.customer_phone} | 📧 ${order.customer_email || 'N/A'}</div>
+              ${order.customer_city ? `<div class="order-info">📍 ${order.customer_city}</div>` : ''}
+              <div class="order-items">
+                <h4>Cursos (${items.length}):</h4>
+                <ul>
+                  ${items.map(i => `<li>${i.title} x${i.qty}</li>`).join('')}
+                </ul>
+              </div>
+              <div style="font-size:18px; font-weight:900; color:#DB2777; text-align:right;">Total: $${(order.total||0).toLocaleString('es-CO')}</div>
+            </div>
+          `;
+        });
+
+        updateStats(data.length, pending, completed);
+
+      } catch (e) {
+        container.innerHTML = '<div class="loading" style="color:red">Error: ' + e.message + '</div>';
+      }
+    }
+
+    function updateStats(total, pending, completed) {
+      document.getElementById('totalOrders').textContent = total;
+      document.getElementById('pendingOrders').textContent = pending;
+      document.getElementById('completedOrders').textContent = completed;
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+      try {
+        const { error } = await supabaseClient.from('orders').update({ status: newStatus }).eq('id', orderId);
+        if (error) throw error;
+        alert('✅ Estado actualizado correctamente');
+        loadOrders();
+      } catch (e) {
+        alert('❌ Error: ' + e.message);
+      }
+    }
+
+    // INICIALIZAR
+    loadProducts();
+    updateBadge();
   </script>
 </body>
 </html>
