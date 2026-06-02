@@ -10,11 +10,12 @@ Ejecuta el siguiente SQL en el **SQL Editor** de Supabase:
 -- Tabla de Productos/Cursos
 CREATE TABLE products (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    name TEXT NOT NULL,
+    title TEXT NOT NULL,
     price DECIMAL NOT NULL,
+    original_price DECIMAL,
     description TEXT,
     category TEXT,
-    image_url TEXT,
+    image TEXT,
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -26,8 +27,8 @@ CREATE TABLE orders (
     customer_email TEXT,
     customer_city TEXT,
     items JSONB NOT NULL,
-    total_amount DECIMAL NOT NULL,
-    status TEXT DEFAULT 'pendiente',
+    total DECIMAL NOT NULL,
+    status TEXT DEFAULT 'pending',
     created_at TIMESTAMPTZ DEFAULT now()
 );
 ```
@@ -66,6 +67,13 @@ CREATE POLICY "Permitir lectura pública de pedidos"
 ON orders FOR SELECT
 TO anon
 USING (true);
+
+-- Permitir actualización de estado (Requerido para el Admin Panel)
+CREATE POLICY "Permitir actualización pública de pedidos"
+ON orders FOR UPDATE
+TO anon
+USING (true)
+WITH CHECK (true);
 ```
 
 #### Opción B: Producción (Recomendada)
@@ -82,6 +90,13 @@ CREATE POLICY "Permitir lectura solo a admins"
 ON orders FOR SELECT
 TO authenticated
 USING (true);
+
+-- Solo permitir actualización a usuarios autenticados (Admin)
+CREATE POLICY "Permitir actualización solo a admins"
+ON orders FOR UPDATE
+TO authenticated
+USING (true)
+WITH CHECK (true);
 ```
 
 ## 3. Advertencia de Seguridad
