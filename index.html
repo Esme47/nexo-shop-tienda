@@ -23,10 +23,24 @@
     .category-btn.active { background: #EC4899; color: white; border-color: #EC4899; }
 
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(236, 72, 153, 0.1); border: 2px solid #FBCFE8; cursor: pointer; transition: transform 0.2s; }
+    .card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(236, 72, 153, 0.1);
+      border: 2px solid #FBCFE8;
+      cursor: pointer;
+      transition: transform 0.2s;
+      min-height: 350px;
+    }
     .card:active { transform: scale(0.98); }
-    .card-img-container { width: 100%; height: 160px; background: #fdf2f8; display: flex; align-items: center; justify-content: center; padding: 10px; }
-    .card img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .card img {
+      width: 100%;
+      height: 250px;
+      object-fit: contain;
+      background: linear-gradient(135deg, #FFF0F6, #FFFFFF);
+      padding: 10px;
+    }
     .info { padding: 10px; }
     .title { font-size: 13px; font-weight: 700; margin: 0 0 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .price { font-size: 16px; font-weight: 900; color: #DB2777; }
@@ -411,7 +425,9 @@
     let products = [];
     let currentCategory = 'all';
     let currentProduct = null;
-    let adminPassword = 'nexo2026admin'; // Cambia esta contraseña
+    // ADVERTENCIA DE SEGURIDAD: Esta contraseña se expone en el cliente.
+    // Para producción, usa Supabase Auth (ver SUPABASE_GUIDE.md).
+    let adminPassword = 'nexo2026admin';
 
     // NAVEGACIÓN
     function showHome() {
@@ -498,9 +514,7 @@
         const disc = p.original_price ? Math.round(((p.original_price - p.price)/p.original_price)*100) : 0;
         grid.innerHTML += `
           <div class="card" onclick="openProductModal('${p.id}')">
-            <div class="card-img-container">
-                <img src="${p.image || 'https://via.placeholder.com/150'}" alt="${p.title}">
-            </div>
+            <img src="${p.image || 'https://via.placeholder.com/150'}" alt="${p.title}">
             <div class="info">
               <p class="title">${p.title}</p>
               <div><span class="price">$${(p.price||0).toLocaleString('es-CO')}</span> ${p.original_price ? `<span class="original">$${p.original_price.toLocaleString('es-CO')}</span>` : ''}</div>
