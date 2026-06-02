@@ -82,3 +82,4 @@ const SUPABASE_KEY = 'tu-anon-key';
 - **UUIDs:** El código JS usa comillas simples para manejar los IDs de Supabase: `addToCart('${p.id}')`. No las elimines o el carrito fallará.
 - **Admin Password:** La contraseña `nexo2026admin` es puramente cosmética para el prototipo. Para seguridad real, utiliza la Opción B de las políticas RLS.
 - **Campos de Pedido:** La aplicación espera `customer_name`, `customer_phone`, `customer_email`, `customer_city`, `total`, `items` (JSONB) y `status`.
+- **¿No aparecen los cursos?:** Asegúrate de que los productos tengan la categoría escrita exactamente como los botones (ej: "Manicurista"). El código es flexible y acepta tanto el campo `price` como `total`. Lo más común es que las políticas RLS estén bloqueando la lectura; verifica que tengas la política de "Permitir lectura pública de productos" activa.

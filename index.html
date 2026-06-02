@@ -595,44 +595,84 @@
     // CARGAR PRODUCTOS
     async function loadProducts() {
       const grid = document.getElementById('productGrid');
+      grid.innerHTML = '<div class="loading">🔄 Cargando cursos...</div>';
+
       try {
+        console.log("Intentando cargar productos de Supabase...");
         const { data, error } = await supabaseClient.from('products').select('*');
-        if (error) throw error;
+
+        if (error) {
+          console.error("Error de Supabase:", error);
+          throw error;
+        }
+
+        console.log("Productos cargados:", data ? data.length : 0);
         products = data || [];
         renderProducts();
       } catch (e) {
-        grid.innerHTML = '<div class="loading"><h3>⛔ Error</h3><p>' + e.message + '</p></div>';
+        console.error("Error capturado:", e);
+        grid.innerHTML = `
+          <div class="loading" style="grid-column: 1/-1">
+            <h3>⛔ Error de Conexión</h3>
+            <p>${e.message}</p>
+            <button class="btn-checkout" onclick="loadProducts()" style="width:auto; padding:10px 20px; margin-top:10px">Reintentar</button>
+            <p style="font-size:12px; margin-top:15px; color:#6B7280">Verifica que las políticas RLS de Supabase permitan la lectura pública.</p>
+          </div>`;
       }
     }
 
     function renderProducts() {
       const grid = document.getElementById('productGrid');
-      const filtered = currentCategory === 'all' ? products : products.filter(p => p.category === currentCategory);
+      const filtered = currentCategory === 'all'
+        ? products
+        : products.filter(p => p.category && p.category.toLowerCase() === currentCategory.toLowerCase());
+
       grid.innerHTML = '';
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="loading" style="grid-column: 1/-1">
+            <h3>No hay cursos disponibles</h3>
+            <p>Próximamente más cursos en la categoría "${currentCategory}"</p>
+          </div>`;
+        return;
+      }
+
       filtered.forEach(p => {
-        const disc = p.original_price ? Math.round(((p.original_price - p.price)/p.original_price)*100) : 0;
+        // Soporte para campos 'price' o 'total' (compatibilidad con diferentes esquemas)
+        const price = p.price || p.total || 0;
+        const originalPrice = p.original_price || 0;
+        const disc = (originalPrice > price) ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
+
         grid.innerHTML += `
           <div class="card" onclick="openProductModal('${p.id}')">
-            <img src="${p.image || 'https://via.placeholder.com/150'}" alt="${p.title}">
+            <img src="${p.image || 'https://via.placeholder.com/250'}" alt="${p.title}" loading="lazy">
             <div class="info">
               <p class="title">${p.title}</p>
-              <div><span class="price">$${(p.price||0).toLocaleString('es-CO')}</span> ${p.original_price ? `<span class="original">$${p.original_price.toLocaleString('es-CO')}</span>` : ''}</div>
+              <div>
+                <span class="price">$${price.toLocaleString('es-CO')}</span>
+                ${originalPrice > 0 ? `<span class="original">$${originalPrice.toLocaleString('es-CO')}</span>` : ''}
+              </div>
               ${disc > 0 ? `<div style="color:#10B981;font-size:11px;font-weight:bold;margin:4px 0">-${disc}% OFF</div>` : ''}
               <button class="btn-add" onclick="event.stopPropagation(); addToCart('${p.id}')">Inscribirme</button>
             </div>
           </div>`;
       });
-      if (filtered.length === 0) {
-        grid.innerHTML = '<div class="loading" style="grid-column:1/-1"><h3>Próximamente más cursos en esta categoría...</h3></div>';
-      }
     }
 
     // MODAL DE PRODUCTO - FUNCIONALIDAD OPTIMIZADA
     function openProductModal(productId) {
-      const product = products.find(p => p.id === productId);
-      if (!product) return;
+      // Asegurar que el ID sea string para la búsqueda
+      const idStr = String(productId);
+      const product = products.find(p => String(p.id) === idStr);
+      if (!product) {
+        console.error("Producto no encontrado para modal:", idStr);
+        return;
+      }
 
       currentProduct = product;
+      const price = product.price || product.total || 0;
+      const originalPrice = product.original_price || 0;
 
       // Configurar imagen del modal
       const modalImg = document.getElementById('modalImg');
@@ -641,10 +681,10 @@
 
       // Configurar texto del modal
       document.getElementById('modalTitle').textContent = product.title;
-      document.getElementById('modalPrice').textContent = `$${(product.price || 0).toLocaleString('es-CO')}`;
+      document.getElementById('modalPrice').textContent = `$${price.toLocaleString('es-CO')}`;
 
       // Configurar descripción
-      const disc = product.original_price ? Math.round(((product.original_price - product.price)/product.original_price)*100) : 0;
+      const disc = (originalPrice > price) ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
       document.getElementById('modalDesc').innerHTML = `
         <strong>${product.title}</strong><br><br>
         ${product.description || 'Producto de alta calidad disponible en NEXO Shop. Envíos a toda Colombia.'}<br><br>
@@ -682,12 +722,30 @@
 
     // CARRITO
     function addToCart(id) {
-      const p = products.find(x => x.id === id);
-      if (!p) return;
-      const existing = cart.find(i => i.id === id);
-      if (existing) existing.qty++;
-      else cart.push({ id: p.id, title: p.title, price: p.price, image: p.image, qty: 1 });
-      saveCart(); updateBadge();
+      const idStr = String(id);
+      const p = products.find(x => String(x.id) === idStr);
+      if (!p) {
+        console.error("No se pudo agregar al carrito, ID no encontrado:", idStr);
+        return;
+      }
+
+      const price = p.price || p.total || 0;
+      const existing = cart.find(i => String(i.id) === idStr);
+
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({
+          id: p.id,
+          title: p.title,
+          price: price,
+          image: p.image,
+          qty: 1
+        });
+      }
+
+      saveCart();
+      updateBadge();
       alert('✅ Curso agregado al carrito');
     }
 
@@ -721,10 +779,11 @@
     }
 
     function updateQty(id, delta) {
-      const item = cart.find(i => i.id === id);
+      const idStr = String(id);
+      const item = cart.find(i => String(i.id) === idStr);
       if (!item) return;
       item.qty += delta;
-      if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+      if (item.qty <= 0) cart = cart.filter(i => String(i.id) !== idStr);
       saveCart(); updateBadge(); renderCart();
     }
 
