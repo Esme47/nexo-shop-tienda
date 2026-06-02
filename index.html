@@ -47,18 +47,101 @@
     .original { font-size: 11px; color: #6B7280; text-decoration: line-through; margin-left: 5px; }
     .btn-add { background: linear-gradient(135deg, #EC4899, #A855F7); color: white; border: none; padding: 10px; border-radius: 10px; width: 100%; margin-top: 8px; font-weight: 700; cursor: pointer; }
     
+    /* PRODUCT DETAIL MODAL - OPTIMIZADO */
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: flex-end; }
     .modal.active { display: flex; }
-    .modal-content { background: white; width: 100%; border-radius: 24px 24px 0 0; padding: 24px 16px; max-height: 85vh; overflow-y: auto; animation: slideUp 0.3s; }
+    .modal-content {
+      background: white;
+      width: 100%;
+      border-radius: 24px 24px 0 0;
+      padding: 20px 16px 24px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s;
+      position: relative;
+    }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .modal-close { position: absolute; top: 16px; right: 16px; background: white; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .modal-img-container { width: 100%; background: #fdf2f8; border-radius: 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; padding: 20px; min-height: 250px; }
-    .modal-img { max-width: 100%; max-height: 300px; object-fit: contain; }
-    .modal-title { font-size: 22px; font-weight: 800; margin: 0 0 12px; }
-    .modal-price { font-size: 24px; font-weight: 900; color: #DB2777; margin-bottom: 16px; }
-    .modal-desc { color: #6B7280; line-height: 1.6; margin-bottom: 20px; padding: 16px; background: #FFF0F6; border-radius: 12px; }
-    .modal-features { margin: 16px 0; padding-left: 20px; }
-    .modal-features li { margin: 8px 0; color: #374151; }
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: white;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .modal-img {
+      width: 100%;
+      height: auto;
+      max-height: 280px;
+      object-fit: contain;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      background: #FFF0F6;
+      padding: 8px;
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 10px;
+      line-height: 1.3;
+      padding-right: 40px;
+    }
+    .modal-price {
+      font-size: 22px;
+      font-weight: 900;
+      color: #DB2777;
+      margin-bottom: 14px;
+    }
+    .modal-desc {
+      color: #6B7280;
+      line-height: 1.6;
+      margin-bottom: 18px;
+      padding: 14px;
+      background: #FFF0F6;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+    .modal-features {
+      margin: 16px 0;
+      padding-left: 0;
+      list-style: none;
+    }
+    .modal-features li {
+      margin: 8px 0;
+      color: #374151;
+      padding-left: 24px;
+      position: relative;
+      font-size: 14px;
+    }
+    .modal-features li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #EC4899;
+      font-weight: bold;
+    }
+    .modal-add-btn {
+      background: linear-gradient(135deg, #EC4899, #A855F7);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      width: 100%;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
 
     /* CHECKOUT MODAL */
     .checkout-modal .modal-content { max-height: 90vh; }
@@ -367,22 +450,21 @@
     </div>
   </div>
 
+  <!-- PRODUCT DETAIL MODAL -->
   <div class="modal" id="productModal">
     <button class="modal-close" onclick="closeModal()">×</button>
     <div class="modal-content">
-      <div class="modal-img-container">
-        <img class="modal-img" id="modalImg" src="" alt="">
-      </div>
+      <img class="modal-img" id="modalImg" src="" alt="">
       <h2 class="modal-title" id="modalTitle"></h2>
       <div class="modal-price" id="modalPrice"></div>
       <div class="modal-desc" id="modalDesc"></div>
       <ul class="modal-features">
-        <li>✓ Curso 100% online</li>
-        <li>✓ Acceso ilimitado por 12 meses</li>
-        <li>✓ Certificado de participación</li>
-        <li>✓ Garantía de 7 días</li>
+        <li>Producto 100% original</li>
+        <li>Envío a todo Colombia</li>
+        <li>Garantía de 30 días</li>
+        <li>Pago seguro</li>
       </ul>
-      <button class="btn-add" id="modalAddBtn" style="padding: 14px; font-size: 16px;">Inscribirme al Curso</button>
+      <button class="modal-add-btn" id="modalAddBtn">Agregar al Carrito</button>
     </div>
   </div>
 
@@ -528,26 +610,58 @@
       }
     }
 
-    // MODAL PRODUCTO
-    function openProductModal(id) {
-      const p = products.find(x => x.id === id);
-      if (!p) return;
-      currentProduct = p;
-      document.getElementById('modalImg').src = p.image;
-      document.getElementById('modalTitle').textContent = p.title;
-      document.getElementById('modalPrice').textContent = `$${(p.price||0).toLocaleString('es-CO')}`;
-      const disc = p.original_price ? Math.round(((p.original_price - p.price)/p.original_price)*100) : 0;
+    // MODAL DE PRODUCTO - FUNCIONALIDAD OPTIMIZADA
+    function openProductModal(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      currentProduct = product;
+
+      // Configurar imagen del modal
+      const modalImg = document.getElementById('modalImg');
+      modalImg.src = product.image || 'https://via.placeholder.com/250';
+      modalImg.alt = product.title;
+
+      // Configurar texto del modal
+      document.getElementById('modalTitle').textContent = product.title;
+      document.getElementById('modalPrice').textContent = `$${(product.price || 0).toLocaleString('es-CO')}`;
+
+      // Configurar descripción
+      const disc = product.original_price ? Math.round(((product.original_price - product.price)/product.original_price)*100) : 0;
       document.getElementById('modalDesc').innerHTML = `
-        <strong>${p.title}</strong><br><br>
-        ${p.description || 'Curso profesional online con acceso ilimitado por 12 meses. Certificado incluido.'}<br><br>
+        <strong>${product.title}</strong><br><br>
+        ${product.description || 'Producto de alta calidad disponible en NEXO Shop. Envíos a toda Colombia.'}<br><br>
         ${disc > 0 ? `<strong style="color:#10B981">¡Ahorra ${disc}%!</strong><br>` : ''}
-        Precio original: ${p.original_price ? `$${p.original_price.toLocaleString('es-CO')}` : 'N/A'}
+        Precio original: ${product.original_price ? `$${product.original_price.toLocaleString('es-CO')}` : 'N/A'}
       `;
-      document.getElementById('modalAddBtn').onclick = () => { addToCart(p.id); closeModal(); };
+
+      // Configurar botón de agregar - CON event.stopPropagation para evitar conflictos
+      const addBtn = document.getElementById('modalAddBtn');
+      addBtn.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCart(product.id);
+        closeModal();
+      };
+
+      // Mostrar modal
       document.getElementById('productModal').classList.add('active');
+
+      // Prevenir scroll del body cuando el modal está abierto
+      document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() { document.getElementById('productModal').classList.remove('active'); }
+    function closeModal() {
+      document.getElementById('productModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Cerrar modal al hacer clic fuera del contenido
+    document.getElementById('productModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
 
     // CARRITO
     function addToCart(id) {

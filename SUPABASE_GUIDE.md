@@ -12,9 +12,10 @@ CREATE TABLE products (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title TEXT NOT NULL,
   image TEXT NOT NULL,
-  total NUMERIC NOT NULL,
+  price NUMERIC NOT NULL,
   original_price NUMERIC,
   category TEXT DEFAULT 'Otros',
+  description TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -23,10 +24,11 @@ CREATE TABLE orders (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   customer_name TEXT NOT NULL,
   customer_phone TEXT NOT NULL,
-  customer_location TEXT,
+  customer_email TEXT,
+  customer_city TEXT,
   items JSONB NOT NULL,
-  total_price NUMERIC NOT NULL,
-  status TEXT DEFAULT 'Pendiente',
+  total NUMERIC NOT NULL,
+  status TEXT DEFAULT 'pending',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
@@ -47,10 +49,10 @@ CREATE POLICY "Permitir lectura pública de productos" ON products FOR SELECT US
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Permitir inserción pública de pedidos" ON orders FOR INSERT WITH CHECK (true);
 
--- ADVERTENCIA: La siguiente línea permite que CUALQUIERA vea los datos de tus clientes.
+-- ADVERTENCIA: Las siguientes líneas permiten que CUALQUIERA vea o edite los datos de tus clientes.
 -- Solo usar para pruebas. En producción, usa la Opción B.
 CREATE POLICY "Permitir lectura pública de pedidos" ON orders FOR SELECT USING (true);
-CREATE POLICY "Permitir actualización de pedidos" ON orders FOR UPDATE USING (true);
+CREATE POLICY "Permitir actualización pública de pedidos" ON orders FOR UPDATE USING (true);
 ```
 
 ### Opción B: Producción (Recomendado)
@@ -79,3 +81,4 @@ const SUPABASE_KEY = 'tu-anon-key';
 
 - **UUIDs:** El código JS usa comillas simples para manejar los IDs de Supabase: `addToCart('${p.id}')`. No las elimines o el carrito fallará.
 - **Admin Password:** La contraseña `nexo2026admin` es puramente cosmética para el prototipo. Para seguridad real, utiliza la Opción B de las políticas RLS.
+- **Campos de Pedido:** La aplicación espera `customer_name`, `customer_phone`, `customer_email`, `customer_city`, `total`, `items` (JSONB) y `status`.
