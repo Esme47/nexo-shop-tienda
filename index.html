@@ -218,6 +218,13 @@
     .hidden { display: none !important; }
     .loading { text-align: center; padding: 40px; color: #6B7280; grid-column: 1 / -1; }
   </style>
+  <!-- EmailJS -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function() {
+      emailjs.init({ publicKey: "user_LKJwgjxACkfRWiqxA" });
+    })();
+  </script>
 </head>
 <body>
   <header>
@@ -248,51 +255,46 @@
     </div>
   </main>
 
-  <!-- CHECKOUT MODAL -->
-  <div class="modal checkout-modal" id="checkoutModal">
-    <button class="modal-close" onclick="closeCheckout()">×</button>
+  <!-- MODAL FINALIZAR INSCRIPCIÓN -->
+  <div class="modal" id="checkoutModal">
+    <button class="modal-close" onclick="closeCheckoutModal()">×</button>
     <div class="modal-content">
-      <h2 style="margin-top:0; color:#EC4899; font-size:24px;">📝 Finalizar Inscripción</h2>
-      <p style="color:#6B7280; margin-bottom:20px;">Completa tus datos para recibir acceso a tus cursos</p>
+      <h2 style="color: #EC4899; margin-bottom: 16px;">📝 Finalizar Inscripción</h2>
+      <p style="color: #6B7280; margin-bottom: 20px;">Completa tus datos para recibir acceso a tus cursos</p>
 
-      <div class="checkout-form">
-        <div class="form-group">
-          <label for="checkoutName">👤 Nombre completo *</label>
-          <input type="text" id="checkoutName" placeholder="Ej: María Fernanda López">
-          <div class="error-message" id="nameError">Por favor ingresa tu nombre completo</div>
-        </div>
-
-        <div class="form-group">
-          <label for="checkoutPhone">📱 WhatsApp / Teléfono *</label>
-          <input type="tel" id="checkoutPhone" placeholder="Ej: 301 844 2704">
-          <div class="error-message" id="phoneError">Por favor ingresa tu número de teléfono</div>
-        </div>
-
-        <div class="form-group">
-          <label for="checkoutEmail">📧 Correo electrónico *</label>
-          <input type="email" id="checkoutEmail" placeholder="Ej: maria@email.com">
-          <div class="error-message" id="emailError">Por favor ingresa un correo válido</div>
-        </div>
-
-        <div class="form-group">
-          <label for="checkoutCity">📍 Ciudad</label>
-          <input type="text" id="checkoutCity" placeholder="Ej: Montería, Córdoba">
-        </div>
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-weight: 600; margin-bottom: 6px;">👤 Nombre completo *</label>
+        <input type="text" id="checkoutName" placeholder="Ej: María Fernanda López"
+          style="width: 100%; padding: 12px; border: 2px solid #FBCFE8; border-radius: 10px; font-size: 14px; font-family: inherit;">
       </div>
 
-      <div style="background:#FFF0F6; padding:16px; border-radius:12px; margin:20px 0;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-          <span style="color:#6B7280;">Total a pagar:</span>
-          <span style="font-size:20px; font-weight:900; color:#DB2777;" id="checkoutTotal">$0</span>
-        </div>
-        <p style="font-size:12px; color:#6B7280; margin:0;">💳 Te contactaremos por WhatsApp para coordinar el pago</p>
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-weight: 600; margin-bottom: 6px;">📱 WhatsApp / Teléfono *</label>
+        <input type="tel" id="checkoutPhone" placeholder="Ej: 3018442704" maxlength="10"
+          style="width: 100%; padding: 12px; border: 2px solid #FBCFE8; border-radius: 10px; font-size: 14px; font-family: inherit;">
       </div>
 
-      <button class="btn-checkout" onclick="processCheckout()" style="padding:16px; font-size:18px;">✅ Confirmar Inscripción</button>
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-weight: 600; margin-bottom: 6px;">📧 Correo electrónico *</label>
+        <input type="email" id="checkoutEmail" placeholder="Ej: maria@email.com"
+          style="width: 100%; padding: 12px; border: 2px solid #FBCFE8; border-radius: 10px; font-size: 14px; font-family: inherit;">
+      </div>
 
-      <p style="text-align:center; font-size:12px; color:#9CA3AF; margin-top:16px;">
-        🔒 Tus datos están protegidos y nunca serán compartidos
-      </p>
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-weight: 600; margin-bottom: 6px;">📍 Ciudad</label>
+        <input type="text" id="checkoutCity" placeholder="Ej: Montería, Córdoba"
+          style="width: 100%; padding: 12px; border: 2px solid #FBCFE8; border-radius: 10px; font-size: 14px; font-family: inherit;">
+      </div>
+
+      <div style="background: #FFF0F6; padding: 16px; border-radius: 12px; margin: 20px 0;">
+        <p style="margin: 0; font-size: 14px;">Total a pagar: <strong style="color: #DB2777; font-size: 20px;" id="checkoutTotal">$0</strong></p>
+        <p style="margin: 8px 0 0; font-size: 12px; color: #6B7280;">💳 Te contactaremos por WhatsApp para coordinar el pago</p>
+      </div>
+
+      <button onclick="processCheckout()"
+        style="background: linear-gradient(135deg, #EC4899, #A855F7); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 16px; width: 100%; cursor: pointer; font-family: inherit;">
+        ✅ Confirmar Inscripción
+      </button>
     </div>
   </div>
 
@@ -480,7 +482,7 @@
     <div class="cart-total" id="cartTotal" style="display:none">
       <h3>Total</h3>
       <div class="total-price" id="totalPrice">$0</div>
-      <button class="btn-checkout" onclick="openCheckout()">Finalizar Inscripción</button>
+      <button class="btn-checkout" onclick="openCheckoutModal()">Finalizar Inscripción</button>
     </div>
   </div>
 
@@ -720,6 +722,74 @@
       }
     });
 
+    // ============ TOAST NOTIFICATION ============
+    function showToast(message, type = 'success', duration = 3000) {
+      const existing = document.querySelector('.toast-notification');
+      if (existing) existing.remove();
+
+      const colors = {
+        success: '#10B981',
+        error: '#EF4444',
+        warning: '#F59E0B',
+        info: '#3B82F6'
+      };
+
+      const icons = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+      };
+
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification';
+      toast.innerHTML = `
+        <div style="
+          position: fixed; bottom: 100px; left: 50%;
+          transform: translateX(-50%) translateY(100px);
+          background: ${colors[type]}; color: white;
+          padding: 16px 28px; border-radius: 16px;
+          font-weight: 700; font-size: 14px;
+          z-index: 10000; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+          display: flex; align-items: center; gap: 12px;
+          opacity: 0; transition: all 0.3s ease;
+          max-width: 90%;
+        ">
+          <span style="font-size: 20px">${icons[type]}</span>
+          <span>${message}</span>
+        </div>
+      `;
+      document.body.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        const div = toast.firstChild;
+        div.style.opacity = '1';
+        div.style.transform = 'translateX(-50%) translateY(0)';
+      });
+
+      setTimeout(() => {
+        const div = toast.firstChild;
+        div.style.opacity = '0';
+        div.style.transform = 'translateX(-50%) translateY(100px)';
+        setTimeout(() => toast.remove(), 300);
+      }, duration);
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function isValidPhone(phone) {
+      return /^[0-9]{10}$/.test(phone);
+    }
+
+    function sanitize(str) {
+      if (!str) return '';
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
     // CARRITO
     function addToCart(id) {
       const idStr = String(id);
@@ -791,89 +861,114 @@
     function updateBadge() { document.getElementById('badge').textContent = cart.reduce((s, i) => s + i.qty, 0); }
 
     // CHECKOUT MODAL ELEGANTE
-    function openCheckout() {
-      const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    function openCheckoutModal() {
+      if (cart.length === 0) {
+        showToast('Carrito vacío', 'warning');
+        return;
+      }
+      const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       document.getElementById('checkoutTotal').textContent = `$${total.toLocaleString('es-CO')}`;
       document.getElementById('checkoutModal').classList.add('active');
+
       // Limpiar formulario
       document.getElementById('checkoutName').value = '';
       document.getElementById('checkoutPhone').value = '';
       document.getElementById('checkoutEmail').value = '';
       document.getElementById('checkoutCity').value = '';
-      // Limpiar errores
-      document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
-      document.querySelectorAll('input').forEach(el => el.classList.remove('error'));
     }
 
-    function closeCheckout() { document.getElementById('checkoutModal').classList.remove('active'); }
+    function closeCheckoutModal() {
+      document.getElementById('checkoutModal').classList.remove('active');
+    }
 
-    function processCheckout() {
+    async function processCheckout() {
       const nombre = document.getElementById('checkoutName').value.trim();
-      const telefono = document.getElementById('checkoutPhone').value.trim();
+      const telefono = document.getElementById('checkoutPhone').value.trim().replace(/\D/g,'');
       const email = document.getElementById('checkoutEmail').value.trim();
       const ciudad = document.getElementById('checkoutCity').value.trim();
-      const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
 
-      // Validar campos
-      let hasError = false;
-      document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
-      document.querySelectorAll('input').forEach(el => el.classList.remove('error'));
-
-      if (!nombre) {
-        document.getElementById('checkoutName').classList.add('error');
-        document.getElementById('nameError').classList.add('show');
-        hasError = true;
-      }
-      if (!telefono) {
-        document.getElementById('checkoutPhone').classList.add('error');
-        document.getElementById('phoneError').classList.add('show');
-        hasError = true;
-      }
-      if (!email || !email.includes('@')) {
-        document.getElementById('checkoutEmail').classList.add('error');
-        document.getElementById('emailError').classList.add('show');
-        hasError = true;
+      // Validaciones
+      if (!nombre || nombre.length < 3) {
+        showToast('Nombre debe tener al menos 3 caracteres', 'error');
+        return;
       }
 
-      if (hasError) return;
+      if (!isValidPhone(telefono)) {
+        showToast('Teléfono debe tener 10 dígitos', 'error');
+        return;
+      }
 
-      // Guardar pedido en Supabase
-      supabaseClient.from('orders').insert([{
-        customer_name: nombre,
-        customer_phone: telefono,
-        customer_email: email,
-        customer_city: ciudad,
-        total: total,
-        items: JSON.stringify(cart),
-        status: 'pending'
-      }]).then(({ error }) => {
-        if (error) {
-          alert('⛔ Error al guardar: ' + error.message);
-          return;
+      if (!isValidEmail(email)) {
+        showToast('Email inválido', 'error');
+        return;
+      }
+
+      const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+      showToast('📤 Procesando...', 'info', 2000);
+
+      try {
+        // 1. Guardar pedido en Supabase
+        const { error: dbError } = await supabaseClient.from('orders').insert([{
+          customer_name: nombre,
+          customer_phone: telefono,
+          customer_email: email,
+          customer_city: ciudad,
+          total: total,
+          items: JSON.stringify(cart),
+          status: 'pending',
+          created_at: new Date().toISOString()
+        }]);
+
+        if (dbError) throw dbError;
+
+        // 2. Preparar lista de productos para el email
+        const productsList = cart.map(i =>
+          `• ${i.title} x${i.qty} = $${(i.price*i.qty).toLocaleString('es-CO')}`
+        ).join('<br>');
+
+        // 3. Enviar email al cliente via EmailJS
+        try {
+          await emailjs.send(
+            'service_xxxxxxxx',   // ← REEMPLAZA con tu Service ID
+            'template_xxxxxxxx',  // ← REEMPLAZA con tu Template ID
+            {
+              customer_name: nombre,
+              customer_phone: telefono,
+              customer_email: email,
+              customer_city: ciudad || 'No especificada',
+              products: productsList,
+              total: `$${total.toLocaleString('es-CO')}`,
+              date: new Date().toLocaleString('es-CO')
+            }
+          );
+        } catch (mailErr) {
+          console.error('EmailJS Error:', mailErr);
+          // Continuamos aunque falle el mail, para no bloquear la venta
         }
 
-        // Enviar WhatsApp
-        let msg = `🛒 *NUEVA INSCRIPCIÓN - NEXO Shop*\n\n`;
-        msg += `👤 *Nombre:* ${nombre}\n`;
-        msg += `📱 *Teléfono:* ${telefono}\n`;
-        msg += `📧 *Email:* ${email}\n`;
-        if (ciudad) msg += `📍 *Ciudad:* ${ciudad}\n`;
-        msg += `\n📦 *Cursos Inscritos:*\n`;
-        cart.forEach(i => msg += `• ${i.title}\n`);
-        msg += `\n💰 *TOTAL: $${total.toLocaleString('es-CO')}*\n`;
-        msg += `📍 Montería, Colombia\n\n`;
-        msg += `¿Cómo puedo proceder al pago? (Nequi, Daviplata, Transferencia)`;
+        // 4. Enviar WhatsApp al admin
+        let msg = `🛒 *NUEVO PEDIDO - NEXO Shop*\n\n`;
+        msg += `👤 ${nombre}\n📱 ${telefono}\n📧 ${email}\n📍 ${ciudad || 'N/A'}\n\n`;
+        msg += `📦 *Productos:*\n`;
+        cart.forEach(i => msg += `• ${i.title} x${i.qty} = $${(i.price*i.qty).toLocaleString('es-CO')}\n`);
+        msg += `\n💰 *TOTAL: $${total.toLocaleString('es-CO')}*`;
 
         window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
 
-        // Limpiar carrito y cerrar
+        // 5. Limpiar carrito y cerrar modal
         cart = [];
         saveCart();
         updateBadge();
-        closeCheckout();
+        closeCheckoutModal();
         showHome();
-        alert('✅ ¡Inscripción exitosa! Te contactaremos por WhatsApp en menos de 24 horas.');
-      });
+
+        showToast('🎉 ¡Inscripción exitosa! Revisa tu email', 'success', 4000);
+
+      } catch (error) {
+        console.error('Error checkout:', error);
+        showToast('❌ Error al procesar. Intenta de nuevo.', 'error', 4000);
+      }
     }
 
     // ADMIN PANEL
@@ -955,13 +1050,13 @@
                 <button onclick="deleteOrder('${order.id}')" style="background:#EF4444; color:white; border:none; width:32px; height:32px; border-radius:8px; cursor:pointer; font-weight:900;">×</button>
               </div>
             </div>
-            <div class="order-info">👤 <strong>${order.customer_name}</strong></div>
-            <div class="order-info">📱 ${order.customer_phone} | 📧 ${order.customer_email || 'N/A'}</div>
-            ${order.customer_city ? `<div class="order-info">📍 ${order.customer_city}</div>` : ''}
+            <div class="order-info">👤 <strong>${sanitize(order.customer_name)}</strong></div>
+            <div class="order-info">📱 ${sanitize(order.customer_phone)} | 📧 ${sanitize(order.customer_email) || 'N/A'}</div>
+            ${order.customer_city ? `<div class="order-info">📍 ${sanitize(order.customer_city)}</div>` : ''}
             <div class="order-items">
               <h4>Cursos (${items.length}):</h4>
               <ul>
-                ${items.map(i => `<li>${i.title} x${i.qty}</li>`).join('')}
+                ${items.map(i => `<li>${sanitize(i.title)} x${i.qty}</li>`).join('')}
               </ul>
             </div>
             <div style="font-size:18px; font-weight:900; color:#DB2777; text-align:right;">Total: $${(order.total||0).toLocaleString('es-CO')}</div>
